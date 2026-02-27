@@ -27,7 +27,8 @@ input,select,button{font-family:inherit}
 .tb .i{font-size:14px}
 .tb .l{font-size:9px;font-weight:600;color:var(--textLt)}
 .tb.a .l{color:var(--sage)}
-.ct{padding:16px 16px 120px;max-width:500;margin:0 auto}
+/* FIXED: add px */
+.ct{padding:16px 16px 120px;max-width:500px;margin:0 auto}
 .cd{background:var(--white);border-radius:16px;padding:18px 20px;border:1px solid var(--border);margin-bottom:12px}
 .inp{padding:12px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--white);color:var(--text);font-size:15px;outline:none;width:100%;transition:border .2s}
 .inp:focus{border-color:var(--sage)}
@@ -172,15 +173,50 @@ function ring(pct,sz,col){const r=(sz-6)/2,ci=2*Math.PI*r,o=ci-(pct/100)*ci;retu
 function dl(){if(!S.wDate)return null;return Math.max(0,Math.ceil((new Date(S.wDate+"T00:00:00")-new Date())/864e5));}
 function sdl(){if(!S.showerDate)return null;return Math.max(0,Math.ceil((new Date(S.showerDate+"T00:00:00")-new Date())/864e5));}
 
-const TABS=[["home","🏠","Home"],["tasks","✓","Tasks"],["budget","$","Budget"],["guests","👥","Guests"],["seating","◉","Seating"],["timeline","🕐","Day Of"],["shower","🎀","Shower"]];
+/* UPDATED:
+   - Shower tab icon changed to 🍓
+   - Added a top-level "Shower List" tab that jumps to Shower > Guests
+*/
+const TABS=[
+  ["home","🏠","Home"],
+  ["tasks","✓","Tasks"],
+  ["budget","$","Budget"],
+  ["guests","👥","Guests"],
+  ["seating","◉","Seating"],
+  ["timeline","🕐","Day Of"],
+  ["shower","🍓","Shower"],
+  ["showerGuests","👥","Shower List"]
+];
 
 function render(){
-document.getElementById("hn").textContent=(S.p1&&S.p2)?S.p1+" & "+S.p2:"";
-const tb=document.getElementById("tabs");tb.innerHTML="";
-TABS.forEach(([id,ic,lb])=>{const b=h("button",{cls:`tb ${tab===id?"a":""}`,onClick:()=>{tab=id;sq="";render();}});b.innerHTML=`<span class="i">${ic}</span><span class="l">${lb}</span>`;tb.appendChild(b);});
-const ct=document.getElementById("ct");ct.innerHTML="";
-if(!loaded){ct.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--textLt)"><div style="font-size:32px;margin-bottom:12px">💍</div><div style="font-weight:600">Loading...</div></div>`;return;}
-if(tab==="home")rHome(ct);else if(tab==="tasks")rTasks(ct);else if(tab==="budget")rBudget(ct);else if(tab==="guests")rGuests(ct);else if(tab==="seating")rSeating(ct);else if(tab==="timeline")rTimeline(ct);else if(tab==="shower")rShower(ct);
+  // allow direct routing to shower guest list if tab is set that way anywhere
+  if(tab==="showerGuests"){ tab="shower"; window._stab="guests"; }
+
+  document.getElementById("hn").textContent=(S.p1&&S.p2)?S.p1+" & "+S.p2:"";
+  const tb=document.getElementById("tabs");tb.innerHTML="";
+
+  TABS.forEach(([id,ic,lb])=>{
+    const isActive = (tab===id) || (id==="showerGuests" && tab==="shower" && window._stab==="guests");
+    const b=h("button",{
+      cls:`tb ${isActive?"a":""}`,
+      onClick:()=>{
+        sq="";
+        if(id==="showerGuests"){
+          tab="shower";
+          window._stab="guests";
+        }else{
+          tab=id;
+        }
+        render();
+      }
+    });
+    b.innerHTML=`<span class="i">${ic}</span><span class="l">${lb}</span>`;
+    tb.appendChild(b);
+  });
+
+  const ct=document.getElementById("ct");ct.innerHTML="";
+  if(!loaded){ct.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--textLt)"><div style="font-size:32px;margin-bottom:12px">💍</div><div style="font-weight:600">Loading...</div></div>`;return;}
+  if(tab==="home")rHome(ct);else if(tab==="tasks")rTasks(ct);else if(tab==="budget")rBudget(ct);else if(tab==="guests")rGuests(ct);else if(tab==="seating")rSeating(ct);else if(tab==="timeline")rTimeline(ct);else if(tab==="shower")rShower(ct);
 }
 
 // HOME
@@ -217,7 +253,7 @@ html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
 <div class="cd" style="cursor:pointer" id="hs-guests"><div style="font-size:12px;color:var(--textLt);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Guests</div>
 <div style="font-size:24px;font-weight:700;margin-top:2px">${cn} <span style="font-size:14px;color:var(--textLt)">confirmed</span></div>
 <div style="display:flex;gap:8px;margin-top:6px"><span style="font-size:12px;color:var(--tan)">⏳ ${pn}</span></div></div>
-<div class="cd" style="cursor:pointer" id="hs-shower"><div style="font-size:12px;color:var(--textLt);font-weight:600;text-transform:uppercase;letter-spacing:.5px">🎀 Shower</div>
+<div class="cd" style="cursor:pointer" id="hs-shower"><div style="font-size:12px;color:var(--textLt);font-weight:600;text-transform:uppercase;letter-spacing:.5px">🍓 Shower</div>
 <div style="font-size:20px;font-weight:700;margin-top:2px;color:var(--pink)">${std}<span style="font-size:14px;color:var(--textLt)">/${S.showerTasks.length}</span> tasks</div>
 ${sd!==null?`<div style="font-size:12px;color:var(--textLt);margin-top:2px">${sd} days away</div>`:""}</div></div>`;
 
