@@ -27,7 +27,7 @@ input,select,button{font-family:inherit}
 .tb .i{font-size:14px}
 .tb .l{font-size:9px;font-weight:600;color:var(--textLt)}
 .tb.a .l{color:var(--sage)}
-/* FIXED: add px */
+/* FIXED: max-width needs px */
 .ct{padding:16px 16px 120px;max-width:500px;margin:0 auto}
 .cd{background:var(--white);border-radius:16px;padding:18px 20px;border:1px solid var(--border);margin-bottom:12px}
 .inp{padding:12px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--white);color:var(--text);font-size:15px;outline:none;width:100%;transition:border .2s}
@@ -108,6 +108,77 @@ const PREGUESTS=[
 {n:"LJ Sidari",po:true},{n:"Ricky Gil",po:true}
 ];
 
+// PRELOADED BRIDAL SHOWER GUESTS (from your Excel)
+const PRE_SHOWER_GUESTS=[
+  {n:"Mom Hockenberry"},
+  {n:"Kaci Hockenberry"},
+  {n:"Mom Racho"},
+  {n:"Lauren Pataki"},
+  {n:"Jessica Cusatis"},
+  {n:"Grandma Hockenberry"},
+  {n:"Grandmom Plesh"},
+  {n:"Aunt Mary"},
+  {n:"Carly Sweetra"},
+  {n:"Holly Tomko"},
+  {n:"Rosalie Tomko"},
+  {n:"Amelia Tomko"},
+  {n:"Jill Myers"},
+  {n:"Jessica Ulozas"},
+  {n:"Aunt Liz"},
+  {n:"Rebecca Tomko"},
+  {n:"Aunt Jill"},
+  {n:"Morgan Rex"},
+  {n:"Taylor Dworak"},
+  {n:"Emily Farrell"},
+  {n:"Megan Farrell"},
+  {n:"Jade Monka"},
+  {n:"Aunt Corky"},
+  {n:"Aunt Patsy"},
+  {n:"Joanne Lushefski"},
+  {n:"Abigail Lushefski"},
+  {n:"Lori Besecker"},
+  {n:"Kylee Besecker"},
+  {n:"Aunt Rosie"},
+  {n:"Julia Merante"},
+  {n:"Anna Merante"},
+  {n:"Aunt Jeanne"},
+  {n:"Maddison Plesh"},
+  {n:"Aunt Elaine"},
+  {n:"Olivia Racho"},
+  {n:"Sam Banyas"},
+  {n:"Sophia Buckner"},
+  {n:"Colleen Kubishin"},
+  {n:"Brianna Joseph"},
+  {n:"Bonnie Racho"},
+  {n:"Grace Cram"},
+  {n:"Angela Bendick"},
+  {n:"Amelia Bendick"},
+  {n:"Fabianny Gomez"},
+  {n:"Abbie Konnick"},
+  {n:"Jackie Bendick"},
+  {n:"Arianna Lai"},
+  {n:"Carey Hischar"},
+  {n:"Kasey Mowery"},
+  {n:"Danielle Breisch"},
+  {n:"Bethanne Shoemaker"},
+  {n:"Michelle Caffery"},
+  {n:"Trish Sheehe"},
+  {n:"Maggie Dow"},
+  {n:"Janelle Holloman"},
+  {n:"Amy Varano"},
+  {n:"Chelsea Potter"},
+  {n:"Stephanie Murray"},
+  {n:"Diane Hockenberry"},
+  {n:"Alexis Powell"},
+  {n:"Stacie Lewis"},
+  {n:"Nadine Hromisin"},
+  {n:"Johyne Hoyes"},
+  {n:"Debbie Bowling"},
+  {n:"Christa Saitta"},
+  {n:"Sue Jones"},
+  {n:"Mel Kowalski"}
+];
+
 const TASK_CATS=[
 {name:"12+ Months Out",icon:"📋",tasks:[{t:"Set your overall budget",p:"high"},{t:"Choose your wedding date",p:"high"},{t:"Draft initial guest list",p:"high"},{t:"Research & book venue",p:"high"},{t:"Start researching vendors",p:"medium"},{t:"Choose wedding party",p:"medium"},{t:"Hire a wedding planner or coordinator",p:"low"}]},
 {name:"9–12 Months Out",icon:"📸",tasks:[{t:"Book photographer & videographer",p:"high"},{t:"Book caterer or finalize venue catering",p:"high"},{t:"Hire DJ or band",p:"medium"},{t:"Book florist",p:"medium"},{t:"Book officiant",p:"high"},{t:"Start dress or suit shopping",p:"medium"},{t:"Create wedding website",p:"medium"},{t:"Send save-the-dates",p:"high"},{t:"Book hotel room blocks",p:"medium"}]},
@@ -157,6 +228,7 @@ const DEF_TL=[
 function buildTasks(){let id=1;const t=[];TASK_CATS.forEach(c=>c.tasks.forEach(tk=>t.push({id:id++,text:tk.t,done:false,category:c.name,priority:tk.p})));return t;}
 function buildGuests(){return PREGUESTS.map((g,i)=>({id:i+1,name:g.n,rsvp:"pending",meal:"Standard",plusOne:!!g.po,table:"",notes:"",type:"wedding"}));}
 function buildShowerTasks(){return SHOWER_TASKS.map((t,i)=>({id:i+1,text:t.t,priority:t.p,done:false}));}
+function buildShowerGuests(){return PRE_SHOWER_GUESTS.map((g,i)=>({id:i+1,name:g.n,rsvp:"pending"}));}
 
 let S={p1:"",p2:"",wDate:"",tasks:[],budget:[],guests:[],tables:[{id:1,name:"Table 1",seats:10},{id:2,name:"Table 2",seats:10},{id:3,name:"Table 3",seats:8}],timeline:[],
 showerDate:"",showerVenue:"",showerGuests:[],showerTasks:[],showerBudget:[{id:1,cat:"Venue",est:500,act:0},{id:2,cat:"Food & Drinks",est:400,act:0},{id:3,cat:"Cake",est:100,act:0},{id:4,cat:"Decorations",est:200,act:0},{id:5,cat:"Games & Prizes",est:100,act:0},{id:6,cat:"Favors",est:75,act:0},{id:7,cat:"Flowers",est:100,act:0},{id:8,cat:"Misc",est:100,act:0}]};
@@ -164,7 +236,36 @@ let tab="home",tf="all",gf="all",sf="all",sq="",modal=null,loaded=false;
 
 let saveT=null;
 function save(){clearTimeout(saveT);saveT=setTimeout(()=>{document.getElementById("si").classList.remove("hd");DOC.set(S).then(()=>document.getElementById("si").classList.add("hd")).catch(()=>document.getElementById("si").classList.add("hd"));},500);}
-DOC.onSnapshot(doc=>{if(doc.exists){S={...S,...doc.data()};if(!loaded)loaded=true;render();}else if(!loaded){S.tasks=buildTasks();S.budget=DEF_BUDGET;S.timeline=DEF_TL;S.guests=buildGuests();S.showerTasks=buildShowerTasks();loaded=true;save();render();}},()=>{if(!loaded){S.tasks=buildTasks();S.budget=DEF_BUDGET;S.timeline=DEF_TL;S.guests=buildGuests();S.showerTasks=buildShowerTasks();loaded=true;render();}});
+
+DOC.onSnapshot(doc=>{
+  if(doc.exists){
+    S={...S,...doc.data()};
+    if(!loaded)loaded=true;
+    render();
+  }else if(!loaded){
+    S.tasks=buildTasks();
+    S.budget=DEF_BUDGET;
+    S.timeline=DEF_TL;
+    S.guests=buildGuests();
+    S.showerTasks=buildShowerTasks();
+    S.showerGuests=buildShowerGuests();   // <-- preload shower guests on first run
+    loaded=true;
+    save();
+    render();
+  }
+},()=>{
+  if(!loaded){
+    S.tasks=buildTasks();
+    S.budget=DEF_BUDGET;
+    S.timeline=DEF_TL;
+    S.guests=buildGuests();
+    S.showerTasks=buildShowerTasks();
+    S.showerGuests=buildShowerGuests();   // <-- preload shower guests on first run (fallback)
+    loaded=true;
+    render();
+  }
+});
+
 function up(c){Object.assign(S,c);save();render();}
 
 function h(t,a,...ch){const e=document.createElement(t);if(a)Object.entries(a).forEach(([k,v])=>{if(k==="style"&&typeof v==="object")Object.assign(e.style,v);else if(k.startsWith("on"))e[k.toLowerCase()]=v;else if(k==="cls")e.className=v;else if(k==="html")e.innerHTML=v;else e.setAttribute(k,v);});ch.flat().forEach(c=>{if(c!=null)e.appendChild(typeof c==="string"?document.createTextNode(c):c);});return e;}
@@ -173,47 +274,17 @@ function ring(pct,sz,col){const r=(sz-6)/2,ci=2*Math.PI*r,o=ci-(pct/100)*ci;retu
 function dl(){if(!S.wDate)return null;return Math.max(0,Math.ceil((new Date(S.wDate+"T00:00:00")-new Date())/864e5));}
 function sdl(){if(!S.showerDate)return null;return Math.max(0,Math.ceil((new Date(S.showerDate+"T00:00:00")-new Date())/864e5));}
 
-/* UPDATED:
-   - Shower tab icon changed to 🍓
-   - Added a top-level "Shower List" tab that jumps to Shower > Guests
-*/
-const TABS=[
-  ["home","🏠","Home"],
-  ["tasks","✓","Tasks"],
-  ["budget","$","Budget"],
-  ["guests","👥","Guests"],
-  ["seating","◉","Seating"],
-  ["timeline","🕐","Day Of"],
-  ["shower","🍓","Shower"],
-  ["showerGuests","👥","Shower List"]
-];
+// UPDATED: Shower tab icon is 🍓, removed the extra "Shower List" tab
+const TABS=[["home","🏠","Home"],["tasks","✓","Tasks"],["budget","$","Budget"],["guests","👥","Guests"],["seating","◉","Seating"],["timeline","🕐","Day Of"],["shower","🍓","Shower"]];
 
 function render(){
-  // allow direct routing to shower guest list if tab is set that way anywhere
-  if(tab==="showerGuests"){ tab="shower"; window._stab="guests"; }
-
   document.getElementById("hn").textContent=(S.p1&&S.p2)?S.p1+" & "+S.p2:"";
   const tb=document.getElementById("tabs");tb.innerHTML="";
-
   TABS.forEach(([id,ic,lb])=>{
-    const isActive = (tab===id) || (id==="showerGuests" && tab==="shower" && window._stab==="guests");
-    const b=h("button",{
-      cls:`tb ${isActive?"a":""}`,
-      onClick:()=>{
-        sq="";
-        if(id==="showerGuests"){
-          tab="shower";
-          window._stab="guests";
-        }else{
-          tab=id;
-        }
-        render();
-      }
-    });
+    const b=h("button",{cls:`tb ${tab===id?"a":""}`,onClick:()=>{tab=id;sq="";render();}});
     b.innerHTML=`<span class="i">${ic}</span><span class="l">${lb}</span>`;
     tb.appendChild(b);
   });
-
   const ct=document.getElementById("ct");ct.innerHTML="";
   if(!loaded){ct.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--textLt)"><div style="font-size:32px;margin-bottom:12px">💍</div><div style="font-weight:600">Loading...</div></div>`;return;}
   if(tab==="home")rHome(ct);else if(tab==="tasks")rTasks(ct);else if(tab==="budget")rBudget(ct);else if(tab==="guests")rGuests(ct);else if(tab==="seating")rSeating(ct);else if(tab==="timeline")rTimeline(ct);else if(tab==="shower")rShower(ct);
@@ -226,8 +297,7 @@ const tE=S.budget.reduce((s,b)=>s+b.est,0),tA=S.budget.reduce((s,b)=>s+b.act,0),
 const wg=S.guests.filter(g=>g.type==="wedding"||!g.type);
 const cn=wg.filter(g=>g.rsvp==="yes").reduce((s,g)=>s+(g.plusOne?2:1),0);
 const pn=wg.filter(g=>g.rsvp==="pending").reduce((s,g)=>s+(g.plusOne?2:1),0);
-const hp=S.tasks.filter(t=>t.priority==="high"&&!t.done).length;
-const sd=sdl(),std=S.showerTasks.filter(t=>t.done).length,stp=S.showerTasks.length?Math.round(std/S.showerTasks.length*100):0;
+const sd=sdl(),std=S.showerTasks.filter(t=>t.done).length;
 
 let html=`<div class="cd" style="background:linear-gradient(135deg,var(--sagePale),var(--tanLt));border:none;text-align:center;padding:28px 24px">
 <div style="font-size:13px;font-weight:600;color:var(--sage);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px">The Pataki Wedding</div>
@@ -257,7 +327,6 @@ html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
 <div style="font-size:20px;font-weight:700;margin-top:2px;color:var(--pink)">${std}<span style="font-size:14px;color:var(--textLt)">/${S.showerTasks.length}</span> tasks</div>
 ${sd!==null?`<div style="font-size:12px;color:var(--textLt);margin-top:2px">${sd} days away</div>`:""}</div></div>`;
 
-// Up next
 const un=S.tasks.filter(t=>!t.done).sort((a,b)=>a.priority==="high"?-1:b.priority==="high"?1:0).slice(0,5);
 if(un.length){html+=`<div class="cd"><div style="font-size:14px;font-weight:700;margin-bottom:14px">⚡ Up Next</div>`;
 un.forEach(t=>{html+=`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bgAlt)" id="un-${t.id}">
@@ -487,7 +556,7 @@ html+=`<div style="display:flex;gap:6px;margin-bottom:12px">
 <button class="pill ${sf==="all"?"a":""}" id="sf-all">All</button>
 <button class="pill ${sf==="yes"?"a":""}" id="sf-yes">Confirmed</button>
 <button class="pill ${sf==="pending"?"a":""}" id="sf-pending">Pending</button></div>`;
-if(!sfl.length&&!sg.length){html+=`<div class="cd" style="text-align:center;padding:30px;color:var(--textLt)"><div style="font-size:24px;margin-bottom:8px">🎀</div>No shower guests yet.<br>Upload your list or add manually!</div>`;}
+if(!sfl.length&&!sg.length){html+=`<div class="cd" style="text-align:center;padding:30px;color:var(--textLt)"><div style="font-size:24px;margin-bottom:8px">🎀</div>No shower guests yet.</div>`;}
 sfl.forEach(g=>{html+=`<div class="cd" style="padding:12px 16px;display:flex;align-items:center;gap:12px">
 <div class="av pk">${g.name.charAt(0).toUpperCase()}</div>
 <div style="flex:1"><div style="font-weight:600;font-size:14px">${g.name}</div></div>
