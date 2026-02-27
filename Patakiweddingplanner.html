@@ -240,7 +240,15 @@ function save(){clearTimeout(saveT);saveT=setTimeout(()=>{document.getElementByI
 DOC.onSnapshot(doc=>{
   if(doc.exists){
     S={...S,...doc.data()};
-    if(!loaded)loaded=true;
+
+    // One-time backfill: if the doc already existed but showerGuests was never added
+    if(!S._showerGuestsSeeded && (!Array.isArray(S.showerGuests) || S.showerGuests.length===0)){
+      S.showerGuests = buildShowerGuests();
+      S._showerGuestsSeeded = true;
+      DOC.set(S); // persist immediately
+    }
+
+    if(!loaded) loaded=true;
     render();
   }else if(!loaded){
     S.tasks=buildTasks();
@@ -248,7 +256,8 @@ DOC.onSnapshot(doc=>{
     S.timeline=DEF_TL;
     S.guests=buildGuests();
     S.showerTasks=buildShowerTasks();
-    S.showerGuests=buildShowerGuests();   // <-- preload shower guests on first run
+    S.showerGuests=buildShowerGuests();
+    S._showerGuestsSeeded = true; // mark seeded
     loaded=true;
     save();
     render();
@@ -260,7 +269,8 @@ DOC.onSnapshot(doc=>{
     S.timeline=DEF_TL;
     S.guests=buildGuests();
     S.showerTasks=buildShowerTasks();
-    S.showerGuests=buildShowerGuests();   // <-- preload shower guests on first run (fallback)
+    S.showerGuests=buildShowerGuests();
+    S._showerGuestsSeeded = true; // mark seeded
     loaded=true;
     render();
   }
