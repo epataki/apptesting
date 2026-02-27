@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Pataki Wedding">
+<title>Pataki Wedding Planner</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#FAF8F5;--bgAlt:#F3EDE4;--sage:#7C8C6E;--sageDk:#5F6D52;--sageLt:#A8B89A;--sagePale:#E8EDE3;
+--tan:#C4AD8F;--tanLt:#E8DECE;--tanDk:#A8915F;--cream:#FFF9F0;--white:#FFFFFF;
+--text:#3D3929;--textMid:#6B634F;--textLt:#9C9480;--border:#E8E0D4;
+--red:#C4756A;--redBg:#FDF0EE;--green:#7C8C6E;--greenBg:#EEF2EB;--goldBg:#FBF6EF}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-tap-highlight-color:transparent}
+::-webkit-scrollbar{display:none}
+input,select,button{font-family:inherit}
+.header{background:var(--white);border-bottom:1px solid var(--border);padding:52px 20px 14px;position:sticky;top:0;z-index:50;text-align:center}
+.header-sub{font-size:11px;font-weight:700;color:var(--sage);text-transform:uppercase;letter-spacing:3px}
+.header-title{font-size:22px;font-weight:800;color:var(--text);margin-top:-2px}
+.header-names{font-size:12px;color:var(--textLt);margin-top:2px}
+.tabs{display:flex;background:var(--white);border-bottom:1px solid var(--border);padding:0 4px;overflow-x:auto;position:sticky;top:88px;z-index:50}
+.tab-btn{flex:1;min-width:56px;padding:10px 4px 8px;border:none;border-bottom:3px solid transparent;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:all .2s}
+.tab-btn.active{border-bottom-color:var(--sage)}
+.tab-btn .ico{font-size:16px}
+.tab-btn .lbl{font-size:10px;font-weight:600;color:var(--textLt)}
+.tab-btn.active .lbl{color:var(--sage)}
+.content{padding:16px 16px 120px;max-width:500;margin:0 auto}
+.card{background:var(--white);border-radius:16px;padding:18px 20px;border:1px solid var(--border);margin-bottom:12px}
+.input{padding:12px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--white);color:var(--text);font-size:15px;outline:none;width:100%;transition:border .2s}
+.input:focus{border-color:var(--sage)}
+.select{padding:12px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--white);color:var(--text);font-size:15px;outline:none;width:100%;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B634F' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.select option{background:var(--white);color:var(--text)}
+.btn{padding:11px 22px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;border:none;background:var(--sage);color:var(--white);transition:all .15s;width:100%}
+.btn:active{opacity:.85;transform:scale(.98)}
+.btn-ghost{background:var(--bgAlt);color:var(--textMid);border:1px solid var(--border)}
+.btn-sm{padding:4px 10px;font-size:11px;border-radius:8px;width:auto;background:none;border:1px solid var(--border);color:var(--textLt)}
+.btn-sm.danger{color:var(--red)}
+.label{font-size:12px;font-weight:600;color:var(--textMid);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.pill{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--white);color:var(--textMid);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s}
+.pill.active{background:var(--sage);color:var(--white);border-color:var(--sage)}
+.pill .cnt{background:var(--sagePale);border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px}
+.pill.active .cnt{background:rgba(255,255,255,.3)}
+.hero{background:linear-gradient(135deg,var(--sagePale),var(--tanLt));border:none;text-align:center;padding:28px 24px}
+.countdown{font-size:48px;font-weight:800;color:var(--sageDk);line-height:1;margin-top:16px}
+.countdown-label{font-size:14px;color:var(--textMid);font-weight:500}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ring-wrap{position:relative;display:inline-block}
+.ring-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.prog-bar{height:4px;border-radius:2px;background:var(--bgAlt);margin-top:8px}
+.prog-fill{height:100%;border-radius:2px;transition:width .4s}
+.phase-btn{display:flex;align-items:center;gap:10px;padding:8px 0;width:100%;background:none;border:none;border-bottom:1px solid var(--bgAlt);cursor:pointer;text-align:left;font-family:inherit}
+.task-row{display:flex;align-items:center;gap:12px;padding:14px 16px}
+.check{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:transparent;font-size:13px;transition:all .2s}
+.check.done{border-color:var(--sage);background:var(--sage);color:var(--white)}
+.pri-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.guest-avatar{width:40px;height:40px;border-radius:50%;background:var(--sagePale);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--sageDk);font-size:16px;flex-shrink:0}
+.modal-bg{position:fixed;inset:0;z-index:100;display:flex;align-items:flex-end;justify-content:center}
+.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.3);backdrop-filter:blur(4px)}
+.modal-sheet{position:relative;background:var(--bg);border-radius:24px 24px 0 0;width:100%;max-width:500px;max-height:85vh;overflow:auto;padding:8px 0 24px;animation:slideUp .3s ease}
+.modal-handle{width:36px;height:4px;border-radius:2px;background:var(--border);margin:8px auto 16px}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-close{background:var(--bgAlt);border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--textMid)}
+.tl-line{position:absolute;left:11px;top:12px;bottom:12px;width:2px;background:var(--sageLt)}
+.tl-dot{position:absolute;left:-27px;top:18px;width:14px;height:14px;border-radius:50%;background:var(--white);border:3px solid var(--sage)}
+.seat-dot{width:6px;height:6px;border-radius:50%;background:var(--sage)}
+.sync-bar{position:fixed;top:0;left:0;right:0;z-index:200;height:3px;background:var(--sage);animation:pulse 1.5s infinite}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.status-online{background:#22c55e}
+.status-offline{background:var(--red)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<div id="sync-indicator" class="sync-bar hidden"></div>
+
+<div class="header">
+  <div class="header-sub">The Pataki</div>
+  <div class="header-title">Wedding Planner</div>
+  <div class="header-names" id="header-names"></div>
+</div>
+
+<div class="tabs" id="tabs"></div>
+<div class="content" id="content"></div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ===== FIREBASE INIT =====
+firebase.initializeApp({
+  apiKey: "AIzaSyBjNn9uMWSbyO3i8bFPbxKCSraHvxhdLbQ",
+  authDomain: "pataki-wedding.firebaseapp.com",
+  projectId: "pataki-wedding",
+  storageBucket: "pataki-wedding.firebasestorage.app",
+  messagingSenderId: "690547288662",
+  appId: "1:690547288662:web:729348ea23813df2b5a9f7"
+});
+const db = firebase.firestore();
+const DOC = db.collection("weddings").doc("pataki");
+
+// ===== STATE =====
+let state = {
+  p1: "", p2: "", wDate: "",
+  tasks: [],
+  budget: [],
+  guests: [],
+  tables: [{ id: 1, name: "Table 1", seats: 10 }, { id: 2, name: "Table 2", seats: 10 }, { id: 3, name: "Table 3", seats: 8 }],
+  timeline: []
+};
+let tab = "home";
+let taskFilter = "all";
+let guestFilter = "all";
+let searchQ = "";
+let modal = null;
+let budgetEditId = null;
+let syncing = false;
+let loaded = false;
+
+// ===== DEFAULT DATA =====
+const TASK_CATS = [
+  { name:"12+ Months Out", icon:"📋", tasks:[
+    {t:"Set your overall budget",p:"high"},{t:"Choose your wedding date",p:"high"},{t:"Draft initial guest list",p:"high"},
+    {t:"Research & book venue",p:"high"},{t:"Start researching vendors",p:"medium"},{t:"Choose wedding party",p:"medium"},
+    {t:"Hire a wedding planner or coordinator",p:"low"}]},
+  { name:"9–12 Months Out", icon:"📸", tasks:[
+    {t:"Book photographer & videographer",p:"high"},{t:"Book caterer or finalize venue catering",p:"high"},
+    {t:"Hire DJ or band",p:"medium"},{t:"Book florist",p:"medium"},{t:"Book officiant",p:"high"},
+    {t:"Start dress or suit shopping",p:"medium"},{t:"Create wedding website",p:"medium"},
+    {t:"Send save-the-dates",p:"high"},{t:"Book hotel room blocks for guests",p:"medium"}]},
+  { name:"6–9 Months Out", icon:"💌", tasks:[
+    {t:"Register for gifts",p:"medium"},{t:"Plan honeymoon",p:"low"},{t:"Book transportation",p:"low"},
+    {t:"Schedule hair & makeup trial",p:"medium"},{t:"Order wedding cake or desserts",p:"medium"},
+    {t:"Plan rehearsal dinner",p:"medium"},{t:"Choose wedding party attire",p:"medium"}]},
+  { name:"3–6 Months Out", icon:"✉️", tasks:[
+    {t:"Send invitations",p:"high"},{t:"Order wedding bands",p:"high"},{t:"Finalize ceremony readings & vows",p:"medium"},
+    {t:"Apply for marriage license",p:"high"},{t:"Plan welcome bags for out-of-town guests",p:"low"},
+    {t:"Book rehearsal dinner venue",p:"medium"},{t:"Finalize décor & rental orders",p:"medium"}]},
+  { name:"1–3 Months Out", icon:"🎶", tasks:[
+    {t:"Finalize seating chart",p:"high"},{t:"Confirm all vendor details & timelines",p:"high"},
+    {t:"Create day-of timeline for wedding party",p:"high"},{t:"Break in wedding shoes",p:"low"},
+    {t:"Write toasts or speeches",p:"medium"},{t:"Final dress or suit fitting",p:"high"},
+    {t:"Send rehearsal dinner invites",p:"medium"}]},
+  { name:"Final Weeks", icon:"💍", tasks:[
+    {t:"Confirm final guest count with vendors",p:"high"},{t:"Pick up marriage license",p:"high"},
+    {t:"Prepare tips & payments for vendors",p:"high"},{t:"Pack for honeymoon",p:"low"},
+    {t:"Rehearsal & rehearsal dinner",p:"high"},{t:"Delegate day-of tasks",p:"medium"},
+    {t:"Relax and enjoy your day!",p:"low"}]}
+];
+
+const DEFAULT_BUDGET = [
+  {id:1,cat:"Venue & Rentals",est:10000,act:0,paid:false},{id:2,cat:"Catering & Bar",est:7000,act:0,paid:false},
+  {id:3,cat:"Photography",est:3000,act:0,paid:false},{id:4,cat:"Videography",est:2000,act:0,paid:false},
+  {id:5,cat:"Flowers & Décor",est:2500,act:0,paid:false},{id:6,cat:"Music & Entertainment",est:1500,act:0,paid:false},
+  {id:7,cat:"Wedding Attire",est:2500,act:0,paid:false},{id:8,cat:"Cake & Desserts",est:600,act:0,paid:false},
+  {id:9,cat:"Stationery & Invites",est:500,act:0,paid:false},{id:10,cat:"Transportation",est:800,act:0,paid:false},
+  {id:11,cat:"Favors & Gifts",est:400,act:0,paid:false},{id:12,cat:"Hair & Makeup",est:600,act:0,paid:false},
+  {id:13,cat:"Officiant",est:300,act:0,paid:false},{id:14,cat:"Rings",est:1500,act:0,paid:false},
+  {id:15,cat:"Honeymoon",est:3000,act:0,paid:false},{id:16,cat:"Miscellaneous",est:1000,act:0,paid:false}
+];
+
+const DEFAULT_TIMELINE = [
+  {id:1,time:"8:00 AM",event:"Hair & makeup begins",who:"Bridal Party",loc:"Bridal Suite"},
+  {id:2,time:"11:00 AM",event:"Photographer arrives",who:"Vendors",loc:"Venue"},
+  {id:3,time:"11:30 AM",event:"First look photos",who:"Couple",loc:"Garden"},
+  {id:4,time:"12:00 PM",event:"Wedding party photos",who:"Wedding Party",loc:"Garden"},
+  {id:5,time:"1:00 PM",event:"Family photos",who:"Family",loc:"Venue"},
+  {id:6,time:"2:00 PM",event:"Guests arrive",who:"Guests",loc:"Ceremony"},
+  {id:7,time:"2:30 PM",event:"Ceremony begins",who:"Everyone",loc:"Ceremony"},
+  {id:8,time:"3:00 PM",event:"Cocktail hour",who:"Guests",loc:"Patio"},
+  {id:9,time:"4:00 PM",event:"Grand entrance & dinner",who:"Everyone",loc:"Reception"},
+  {id:10,time:"5:00 PM",event:"First dance",who:"Couple",loc:"Reception"},
+  {id:11,time:"5:15 PM",event:"Parent dances",who:"Family",loc:"Reception"},
+  {id:12,time:"5:30 PM",event:"Toasts & speeches",who:"Wedding Party",loc:"Reception"},
+  {id:13,time:"6:00 PM",event:"Cake cutting",who:"Couple",loc:"Reception"},
+  {id:14,time:"6:30 PM",event:"Open dancing & party",who:"Everyone",loc:"Dance Floor"},
+  {id:15,time:"9:00 PM",event:"Last dance & send-off",who:"Everyone",loc:"Venue"}
+];
+
+function buildDefaultTasks() {
+  let id = 1; const t = [];
+  TASK_CATS.forEach(c => c.tasks.forEach(tk => t.push({id:id++,text:tk.t,done:false,category:c.name,priority:tk.p})));
+  return t;
+}
+
+// ===== FIREBASE SYNC =====
+let saveTimeout = null;
+function saveToFirebase() {
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    syncing = true;
+    document.getElementById("sync-indicator").classList.remove("hidden");
+    DOC.set(state).then(() => {
+      syncing = false;
+      document.getElementById("sync-indicator").classList.add("hidden");
+    }).catch(err => {
+      console.error("Save error:", err);
+      syncing = false;
+      document.getElementById("sync-indicator").classList.add("hidden");
+    });
+  }, 500);
+}
+
+// Listen for real-time updates (for multi-device sync)
+DOC.onSnapshot(doc => {
+  if (doc.exists) {
+    const d = doc.data();
+    state = { ...state, ...d };
+    if (!loaded) { loaded = true; }
+    render();
+  } else if (!loaded) {
+    // First time — seed with defaults
+    state.tasks = buildDefaultTasks();
+    state.budget = DEFAULT_BUDGET;
+    state.timeline = DEFAULT_TIMELINE;
+    loaded = true;
+    saveToFirebase();
+    render();
+  }
+}, err => {
+  console.error("Snapshot error:", err);
+  if (!loaded) {
+    state.tasks = buildDefaultTasks();
+    state.budget = DEFAULT_BUDGET;
+    state.timeline = DEFAULT_TIMELINE;
+    loaded = true;
+    render();
+  }
+});
+
+function update(changes) {
+  Object.assign(state, changes);
+  saveToFirebase();
+  render();
+}
+
+// ===== HELPERS =====
+function h(tag, attrs, ...children) {
+  const el = document.createElement(tag);
+  if (attrs) Object.entries(attrs).forEach(([k, v]) => {
+    if (k === "style" && typeof v === "object") Object.assign(el.style, v);
+    else if (k.startsWith("on")) el[k.toLowerCase()] = v;
+    else if (k === "className") el.className = v;
+    else if (k === "html") el.innerHTML = v;
+    else el.setAttribute(k, v);
+  });
+  children.flat().forEach(c => { if (c != null) el.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+  return el;
+}
+
+function priColor(p) { return p === "high" ? "var(--red)" : p === "medium" ? "var(--tan)" : "var(--sageLt)"; }
+
+function svgRing(pct, size, color) {
+  const r = (size - 6) / 2, circ = 2 * Math.PI * r, off = circ - (pct / 100) * circ;
+  return `<svg width="${size}" height="${size}" style="transform:rotate(-90deg)"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--border)" stroke-width="5"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="5" stroke-dasharray="${circ}" stroke-dashoffset="${off}" stroke-linecap="round" style="transition:stroke-dashoffset .6s ease"/></svg>`;
+}
+
+function daysLeft() {
+  if (!state.wDate) return null;
+  return Math.max(0, Math.ceil((new Date(state.wDate + "T00:00:00") - new Date()) / 86400000));
+}
+
+// ===== RENDER =====
+function render() {
+  // Header names
+  const hn = document.getElementById("header-names");
+  hn.textContent = (state.p1 && state.p2) ? `${state.p1} & ${state.p2}` : "";
+
+  // Tabs
+  const tabsEl = document.getElementById("tabs");
+  tabsEl.innerHTML = "";
+  [["home","🏠","Home"],["tasks","✓","Tasks"],["budget","$","Budget"],["guests","👥","Guests"],["seating","◉","Seating"],["timeline","🕐","Day Of"]].forEach(([id,ico,lbl]) => {
+    const b = h("button", { className: `tab-btn ${tab===id?"active":""}`, onClick: () => { tab=id; searchQ=""; render(); } },
+      h("span", { className: "ico" }, ico), h("span", { className: "lbl" }, lbl));
+    tabsEl.appendChild(b);
+  });
+
+  // Content
+  const ct = document.getElementById("content");
+  ct.innerHTML = "";
+  if (tab === "home") renderHome(ct);
+  else if (tab === "tasks") renderTasks(ct);
+  else if (tab === "budget") renderBudget(ct);
+  else if (tab === "guests") renderGuests(ct);
+  else if (tab === "seating") renderSeating(ct);
+  else if (tab === "timeline") renderTimeline(ct);
+}
+
+// ===== HOME =====
+function renderHome(ct) {
+  const dl = daysLeft();
+  const tasksDone = state.tasks.filter(t=>t.done).length;
+  const tasksPct = state.tasks.length ? Math.round(tasksDone/state.tasks.length*100) : 0;
+  const totEst = state.budget.reduce((s,b)=>s+b.est,0);
+  const totAct = state.budget.reduce((s,b)=>s+b.act,0);
+  const budPct = totEst ? Math.min(100, Math.round(totAct/totEst*100)) : 0;
+  const conf = state.guests.filter(g=>g.rsvp==="yes").reduce((s,g)=>s+(g.plusOne?2:1),0);
+  const pend = state.guests.filter(g=>g.rsvp==="pending").reduce((s,g)=>s+(g.plusOne?2:1),0);
+  const totG = state.guests.reduce((s,g)=>s+(g.plusOne?2:1),0);
+  const hiPri = state.tasks.filter(t=>t.priority==="high"&&!t.done).length;
+
+  // Hero
+  const hero = h("div", { className: "card hero" });
+  hero.innerHTML = `
+    <div style="font-size:13px;font-weight:600;color:var(--sage);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px">The Pataki Wedding</div>
+    <div style="display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:8px">
+      <input class="input" placeholder="Partner 1" value="${state.p1}" id="inp-p1" style="width:120px;text-align:center;font-weight:600;background:rgba(255,255,255,.7);font-size:16px">
+      <span style="font-size:22px">💍</span>
+      <input class="input" placeholder="Partner 2" value="${state.p2}" id="inp-p2" style="width:120px;text-align:center;font-weight:600;background:rgba(255,255,255,.7);font-size:16px">
+    </div>
+    <div style="display:flex;justify-content:center;margin-top:8px">
+      <input type="date" class="input" value="${state.wDate}" id="inp-date" style="width:170px;text-align:center;background:rgba(255,255,255,.7)">
+    </div>
+    ${dl !== null ? `<div class="countdown">${dl}</div><div class="countdown-label">days until your wedding</div>` : ""}
+  `;
+  ct.appendChild(hero);
+  document.getElementById("inp-p1").addEventListener("change", e => update({p1:e.target.value}));
+  document.getElementById("inp-p2").addEventListener("change", e => update({p2:e.target.value}));
+  document.getElementById("inp-date").addEventListener("change", e => update({wDate:e.target.value}));
+
+  // Stats
+  const grid = h("div", { className: "stat-grid" });
+
+  // Tasks stat
+  const ts = h("div", { className: "card", style: { cursor:"pointer" }, onClick: () => { tab="tasks"; render(); } });
+  ts.innerHTML = `<div style="display:flex;align-items:center;gap:12px">
+    <div class="ring-wrap">${svgRing(tasksPct,56,"var(--sage)")}<div class="ring-text" style="color:var(--sage)">${tasksPct}%</div></div>
+    <div><div style="font-size:12px;color:var(--textLt);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Tasks</div>
+    <div style="font-size:20px;font-weight:700">${tasksDone}<span style="font-size:14px;color:var(--textLt)">/${state.tasks.length}</span></div></div></div>`;
+  grid.appendChild(ts);
+
+  // Budget stat
+  const bs = h("div", { className: "card", style: { cursor:"pointer" }, onClick: () => { tab="budget"; render(); } });
+  const bColor = totAct > totEst ? "var(--red)" : "var(--tan)";
+  bs.innerHTML = `<div style="display:flex;align-items:center;gap:12px">
+    <div class="ring-wrap">${svgRing(budPct,56,bColor)}<div class="ring-text" style="color:${bColor}">${budPct}%</div></div>
+    <div><div style="font-size:12px;color:var(--textLt);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Spent</div>
+    <div style="font-size:18px;font-weight:700">$${totAct.toLocaleString()}</div>
+    <div style="font-size:11px;color:var(--textLt)">of $${totEst.toLocaleString()}</div></div></div>`;
+  grid.appendChild(bs);
+
+  // Guests stat
+  const gs = h("div", { className: "card", style: { cursor:"pointer" }, onClick: () => { tab="guests"; render(); } });
+  gs.innerHTML = `<div style="font-size:12px;color:var(--textLt);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Guests</div>
+    <div style="font-size:24px;font-weight:700;margin-top:2px">${conf} <span style="font-size:14px;color:var(--textLt)">confirmed</span></div>
+    <div style="display:flex;gap:8px;margin-top:6px"><span style="font-size:12px;color:var(--tan)">⏳ ${pend}</span></div>`;
+  grid.appendChild(gs);
+
+  // Priority stat
+  const ps = h("div", { className: "card" });
+  ps.innerHTML = `<div style="font-size:12px;color:var(--textLt);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Priority</div>
+    <div style="font-size:24px;font-weight:700;color:${hiPri>0?"var(--red)":"var(--green)"};margin-top:2px">${hiPri}</div>
+    <div style="font-size:12px;color:var(--textLt);margin-top:2px">high-priority left</div>`;
+  grid.appendChild(ps);
+  ct.appendChild(grid);
+
+  // Up next
+  const upNext = state.tasks.filter(t=>!t.done).sort((a,b)=>a.priority==="high"?-1:b.priority==="high"?1:0).slice(0,5);
+  if (upNext.length) {
+    const un = h("div", { className: "card" });
+    un.innerHTML = `<div style="font-size:14px;font-weight:700;margin-bottom:14px">⚡ Up Next</div>`;
+    upNext.forEach(t => {
+      const row = h("div", { style: { display:"flex",alignItems:"center",gap:"12px",padding:"10px 0",borderBottom:"1px solid var(--bgAlt)" } });
+      const ck = h("button", { className: `check ${t.done?"done":""}`, onClick: () => {
+        state.tasks = state.tasks.map(x => x.id===t.id ? {...x, done:!x.done} : x);
+        update({tasks:state.tasks});
+      } }, "✓");
+      const info = h("div", { style: { flex:1 } });
+      info.innerHTML = `<div style="font-size:14px">${t.text}</div><div style="font-size:11px;color:var(--textLt)">${t.category}</div>`;
+      const dot = h("div", { className: "pri-dot", style: { background: priColor(t.priority) } });
+      row.append(ck, info, dot);
+      un.appendChild(row);
+    });
+    ct.appendChild(un);
+  }
+}
+
+// ===== TASKS =====
+function renderTasks(ct) {
+  // Search
+  const si = h("input", { className: "input", placeholder: "Search tasks...", value: searchQ, style: { marginBottom: "12px" },
+    onInput: e => { searchQ = e.target.value; render(); } });
+  ct.appendChild(si);
+
+  // Filters
+  const fl = h("div", { style: { display:"flex",gap:"6px",overflowX:"auto",paddingBottom:"4px",marginBottom:"12px" } });
+  const todoCount = state.tasks.filter(t=>!t.done).length;
+  const doneCount = state.tasks.filter(t=>t.done).length;
+  [["all","All",state.tasks.length],["todo","To Do",todoCount],["done","Done",doneCount]].forEach(([f,l,c]) => {
+    const p = h("button", { className: `pill ${taskFilter===f?"active":""}`, onClick: () => { taskFilter=f; render(); } });
+    p.innerHTML = `${l}<span class="cnt">${c}</span>`;
+    fl.appendChild(p);
+  });
+  ct.appendChild(fl);
+
+  // Phase overview
+  if (taskFilter === "all" && !searchQ) {
+    const phCard = h("div", { className: "card", style: { padding: "14px 16px" } });
+    phCard.innerHTML = `<div style="font-size:13px;font-weight:700;margin-bottom:10px">Planning Timeline</div>`;
+    TASK_CATS.forEach(c => {
+      const catTasks = state.tasks.filter(t=>t.category===c.name);
+      const done = catTasks.filter(t=>t.done).length;
+      const pct = catTasks.length ? Math.round(done/catTasks.length*100) : 0;
+      const row = h("button", { className: "phase-btn", onClick: () => { taskFilter=c.name; render(); } });
+      row.innerHTML = `<span style="font-size:16px;width:24px">${c.icon}</span>
+        <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${c.name}</div>
+        <div class="prog-bar"><div class="prog-fill" style="background:var(--sage);width:${pct}%"></div></div></div>
+        <span style="font-size:12px;color:var(--textLt);font-weight:600">${done}/${catTasks.length}</span>`;
+      phCard.appendChild(row);
+    });
+    ct.appendChild(phCard);
+  } else {
+    // Filtered list
+    let filtered = taskFilter==="all"?state.tasks:taskFilter==="done"?state.tasks.filter(t=>t.done):taskFilter==="todo"?state.tasks.filter(t=>!t.done):state.tasks.filter(t=>t.category===taskFilter);
+    if (searchQ) filtered = filtered.filter(t=>t.text.toLowerCase().includes(searchQ.toLowerCase()));
+
+    // Back button for category
+    if (!["all","done","todo"].includes(taskFilter)) {
+      const bb = h("button", { className: "pill", style: { marginBottom:"12px" }, onClick: () => { taskFilter="all"; render(); } }, "← All Phases");
+      ct.appendChild(bb);
+    }
+
+    filtered.forEach(t => {
+      const card = h("div", { className: "card task-row" });
+      const ck = h("button", { className: `check ${t.done?"done":""}`, onClick: () => {
+        state.tasks = state.tasks.map(x => x.id===t.id?{...x,done:!x.done}:x);
+        update({tasks:state.tasks});
+      } }, "✓");
+      const info = h("div", { style: { flex:1 } });
+      info.innerHTML = `<div style="font-size:14px;${t.done?"text-decoration:line-through;opacity:.5":""}">${t.text}</div><div style="font-size:11px;color:var(--textLt);margin-top:2px">${t.category}</div>`;
+      const dot = h("div", { className: "pri-dot", style: { background: priColor(t.priority) } });
+      card.append(ck, info, dot);
+      ct.appendChild(card);
+    });
+  }
+
+  // Add task
+  ct.appendChild(h("button", { className: "btn", style: { marginTop:"8px" }, onClick: () => { modal="addTask"; renderModal(); } }, "+ Add Custom Task"));
+}
+
+// ===== BUDGET =====
+function renderBudget(ct) {
+  const totEst = state.budget.reduce((s,b)=>s+b.est,0);
+  const totAct = state.budget.reduce((s,b)=>s+b.act,0);
+  const budPct = totEst?Math.min(100,Math.round(totAct/totEst*100)):0;
+
+  const hero = h("div", { className: "card", style: { background:"linear-gradient(135deg,var(--sagePale),var(--tanLt))", border:"none" } });
+  hero.innerHTML = `<div style="display:flex;justify-content:space-between">
+    <div><div style="font-size:12px;color:var(--sageDk);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Total Budget</div>
+    <div style="font-size:28px;font-weight:800;color:var(--sageDk)">$${totEst.toLocaleString()}</div></div>
+    <div style="text-align:right"><div style="font-size:12px;color:var(--sageDk);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Spent</div>
+    <div style="font-size:28px;font-weight:800;color:${totAct>totEst?"var(--red)":"var(--sageDk)"}">$${totAct.toLocaleString()}</div></div></div>
+    <div style="height:8px;border-radius:4px;background:rgba(255,255,255,.5);margin-top:16px">
+    <div style="height:100%;border-radius:4px;background:${totAct>totEst?"var(--red)":"var(--sage)"};width:${budPct}%;transition:width .4s"></div></div>
+    <div style="font-size:13px;color:var(--sageDk);margin-top:8px;text-align:center;font-weight:500">$${Math.max(0,totEst-totAct).toLocaleString()} remaining</div>`;
+  ct.appendChild(hero);
+
+  state.budget.forEach(b => {
+    const card = h("div", { className: "card", style: { padding:"14px 16px" } });
+    const bPct = b.est ? Math.min(100, Math.round(b.act/b.est*100)) : 0;
+    card.innerHTML = `<div style="display:flex;align-items:center;gap:12px">
+      <div style="flex:1"><div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:14px;font-weight:600">${b.cat}</span>
+        ${b.paid?'<span style="font-size:10px;font-weight:700;color:var(--green);background:var(--greenBg);padding:2px 8px;border-radius:10px">PAID</span>':""}</div>
+        <div style="font-size:12px;color:var(--textLt);margin-top:2px">Budget: $${b.est.toLocaleString()}</div></div>
+      <span id="bval-${b.id}" style="background:${b.act>0?(b.act>b.est?"var(--redBg)":"var(--greenBg)"):"var(--bgAlt)"};border:none;border-radius:10px;padding:8px 14px;cursor:pointer;font-size:15px;font-weight:700;color:${b.act>b.est?"var(--red)":b.act>0?"var(--sageDk)":"var(--textLt)"}">$${b.act.toLocaleString()}</span></div>
+      <div class="prog-bar" style="margin-top:10px"><div class="prog-fill" style="background:${b.act>b.est?"var(--red)":"var(--sage)"};width:${bPct}%"></div></div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn-sm" id="bpaid-${b.id}">${b.paid?"Unmark paid":"Mark paid"}</button>
+        <button class="btn-sm danger" id="brem-${b.id}">Remove</button></div>`;
+    ct.appendChild(card);
+
+    document.getElementById(`bval-${b.id}`).addEventListener("click", () => {
+      const val = prompt(`Enter actual cost for ${b.cat}:`, b.act);
+      if (val !== null) {
+        state.budget = state.budget.map(x => x.id===b.id?{...x,act:Number(val)||0}:x);
+        update({budget:state.budget});
+      }
+    });
+    document.getElementById(`bpaid-${b.id}`).addEventListener("click", () => {
+      state.budget = state.budget.map(x => x.id===b.id?{...x,paid:!x.paid}:x);
+      update({budget:state.budget});
+    });
+    document.getElementById(`brem-${b.id}`).addEventListener("click", () => {
+      state.budget = state.budget.filter(x => x.id!==b.id);
+      update({budget:state.budget});
+    });
+  });
+
+  ct.appendChild(h("button", { className: "btn", style: { marginTop:"8px" }, onClick: () => { modal="addBudget"; renderModal(); } }, "+ Add Category"));
+}
+
+// ===== GUESTS =====
+function renderGuests(ct) {
+  const conf = state.guests.filter(g=>g.rsvp==="yes").reduce((s,g)=>s+(g.plusOne?2:1),0);
+  const pend = state.guests.filter(g=>g.rsvp==="pending").reduce((s,g)=>s+(g.plusOne?2:1),0);
+  const dec = state.guests.filter(g=>g.rsvp==="no").reduce((s,g)=>s+(g.plusOne?2:1),0);
+  const totG = state.guests.reduce((s,g)=>s+(g.plusOne?2:1),0);
+
+  const stats = h("div", { style: { display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"10px",marginBottom:"12px" } });
+  stats.innerHTML = `
+    <div class="card" style="text-align:center;padding:14px;background:var(--greenBg);border-color:var(--sageLt)"><div style="font-size:22px;font-weight:800;color:var(--sage)">${conf}</div><div style="font-size:11px;color:var(--sageDk);font-weight:600">Confirmed</div></div>
+    <div class="card" style="text-align:center;padding:14px;background:var(--goldBg);border-color:var(--tanLt)"><div style="font-size:22px;font-weight:800;color:var(--tanDk)">${pend}</div><div style="font-size:11px;color:var(--tanDk);font-weight:600">Pending</div></div>
+    <div class="card" style="text-align:center;padding:14px;background:var(--redBg);border-color:#E8C4BF"><div style="font-size:22px;font-weight:800;color:var(--red)">${dec}</div><div style="font-size:11px;color:var(--red);font-weight:600">Declined</div></div>`;
+  ct.appendChild(stats);
+
+  ct.appendChild(h("input", { className: "input", placeholder: "Search guests...", value: searchQ, style: { marginBottom:"12px" },
+    onInput: e => { searchQ = e.target.value; render(); } }));
+
+  const fl = h("div", { style: { display:"flex",gap:"6px",overflowX:"auto",marginBottom:"12px" } });
+  [["all","All",totG],["yes","Confirmed"],["pending","Pending"],["no","Declined"]].forEach(([f,l,c]) => {
+    const p = h("button", { className: `pill ${guestFilter===f?"active":""}`, onClick: () => { guestFilter=f; render(); } });
+    p.innerHTML = c!==undefined ? `${l}<span class="cnt">${c}</span>` : l;
+    fl.appendChild(p);
+  });
+  ct.appendChild(fl);
+
+  let filtered = guestFilter==="all" ? state.guests : state.guests.filter(g=>g.rsvp===guestFilter);
+  if (searchQ) filtered = filtered.filter(g=>g.name.toLowerCase().includes(searchQ.toLowerCase()));
+
+  if (filtered.length === 0 && state.guests.length === 0) {
+    const empty = h("div", { className: "card", style: { textAlign:"center",padding:"40px 20px",color:"var(--textLt)" } });
+    empty.innerHTML = `<div style="font-size:32px;margin-bottom:8px">👥</div><div style="font-weight:600">No guests yet</div><div style="font-size:13px;margin-top:4px">Start building your guest list!</div>`;
+    ct.appendChild(empty);
+  }
+
+  filtered.forEach(g => {
+    const card = h("div", { className: "card", style: { padding:"14px 16px" } });
+    card.innerHTML = `<div style="display:flex;align-items:center;gap:12px">
+      <div class="guest-avatar">${g.name.charAt(0).toUpperCase()}</div>
+      <div style="flex:1"><div style="font-weight:600;font-size:14px">${g.name}</div>
+      <div style="font-size:12px;color:var(--textLt);margin-top:1px">${g.plusOne?"Plus one":"Solo"} · ${g.meal}${g.table?" · "+g.table:""}</div></div>
+      <select class="select" id="grsvp-${g.id}" style="width:auto;padding:6px 30px 6px 10px;font-size:12px;font-weight:600;border-color:${g.rsvp==="yes"?"var(--sage)":g.rsvp==="no"?"var(--red)":"var(--tan)"};color:${g.rsvp==="yes"?"var(--sage)":g.rsvp==="no"?"var(--red)":"var(--tanDk)"}">
+        <option value="pending" ${g.rsvp==="pending"?"selected":""}>Pending</option>
+        <option value="yes" ${g.rsvp==="yes"?"selected":""}>Confirmed</option>
+        <option value="no" ${g.rsvp==="no"?"selected":""}>Declined</option></select></div>
+      <div style="display:flex;gap:6px;margin-top:8px"><button class="btn-sm danger" id="grem-${g.id}">Remove</button></div>`;
+    ct.appendChild(card);
+    document.getElementById(`grsvp-${g.id}`).addEventListener("change", e => {
+      state.guests = state.guests.map(x => x.id===g.id?{...x,rsvp:e.target.value}:x);
+      update({guests:state.guests});
+    });
+    document.getElementById(`grem-${g.id}`).addEventListener("click", () => {
+      state.guests = state.guests.filter(x => x.id!==g.id);
+      update({guests:state.guests});
+    });
+  });
+
+  ct.appendChild(h("button", { className: "btn", style: { marginTop:"8px" }, onClick: () => { modal="addGuest"; renderModal(); } }, "+ Add Guest"));
+}
+
+// ===== SEATING =====
+function renderSeating(ct) {
+  const assigned = state.guests.filter(g=>g.table&&g.rsvp!=="no");
+  const unassigned = state.guests.filter(g=>!g.table&&g.rsvp!=="no");
+
+  const info = h("div", { className: "card", style: { background:"var(--sagePale)",border:"none",padding:"16px" } });
+  info.innerHTML = `<div style="font-size:13px;font-weight:600;color:var(--sageDk)">${assigned.length} seated · ${unassigned.length} unassigned</div>`;
+  ct.appendChild(info);
+
+  state.tables.forEach(tbl => {
+    const seated = state.guests.filter(g=>g.table===tbl.name&&g.rsvp!=="no");
+    const card = h("div", { className: "card" });
+    const pct = tbl.seats ? Math.min(100, Math.round(seated.length/tbl.seats*100)) : 0;
+    card.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div><span style="font-weight:700;font-size:15px">${tbl.name}</span>
+      <span style="font-size:12px;color:var(--textLt);margin-left:8px">${seated.length}/${tbl.seats} seats</span></div>
+      <button class="btn-sm" id="trem-${tbl.id}">✕</button></div>
+      <div class="prog-bar" style="margin-bottom:10px;margin-top:0"><div class="prog-fill" style="background:${seated.length>tbl.seats?"var(--red)":"var(--sage)"};width:${pct}%"></div></div>`;
+
+    seated.forEach(g => {
+      const row = h("div", { style: { display:"flex",alignItems:"center",gap:"8px",padding:"6px 0",fontSize:"13px" } });
+      row.innerHTML = `<div class="seat-dot"></div>${g.name}<button class="btn-sm" style="margin-left:auto" id="unseat-${g.id}">unseat</button>`;
+      card.appendChild(row);
+    });
+    if (seated.length === 0) card.innerHTML += `<div style="font-size:12px;color:var(--textLt);font-style:italic">No guests seated yet</div>`;
+    ct.appendChild(card);
+
+    document.getElementById(`trem-${tbl.id}`).addEventListener("click", () => {
+      state.guests = state.guests.map(g => g.table===tbl.name?{...g,table:""}:g);
+      state.tables = state.tables.filter(t => t.id!==tbl.id);
+      update({tables:state.tables,guests:state.guests});
+    });
+    seated.forEach(g => {
+      const ub = document.getElementById(`unseat-${g.id}`);
+      if (ub) ub.addEventListener("click", () => {
+        state.guests = state.guests.map(x => x.id===g.id?{...x,table:""}:x);
+        update({guests:state.guests});
+      });
+    });
+  });
+
+  ct.appendChild(h("button", { className: "btn", style: { background:"var(--sagePale)",color:"var(--sageDk)",marginTop:"4px" },
+    onClick: () => {
+      state.tables = [...state.tables, { id: Date.now(), name: `Table ${state.tables.length+1}`, seats: 10 }];
+      update({tables:state.tables});
+    }
+  }, "+ Add Table"));
+
+  if (unassigned.length > 0) {
+    const uCard = h("div", { className: "card", style: { marginTop:"4px" } });
+    uCard.innerHTML = `<div style="font-size:14px;font-weight:700;margin-bottom:10px">Unassigned Guests</div>`;
+    unassigned.forEach(g => {
+      const row = h("div", { style: { display:"flex",alignItems:"center",gap:"8px",padding:"8px 0",borderBottom:"1px solid var(--bgAlt)" } });
+      row.innerHTML = `<span style="font-size:13px;flex:1">${g.name}</span>
+        <select class="select" id="assign-${g.id}" style="width:auto;padding:4px 28px 4px 8px;font-size:12px">
+        <option value="">Assign...</option>${state.tables.map(t=>`<option value="${t.name}">${t.name}</option>`).join("")}</select>`;
+      uCard.appendChild(row);
+    });
+    ct.appendChild(uCard);
+    unassigned.forEach(g => {
+      document.getElementById(`assign-${g.id}`).addEventListener("change", e => {
+        if (e.target.value) {
+          state.guests = state.guests.map(x => x.id===g.id?{...x,table:e.target.value}:x);
+          update({guests:state.guests});
+        }
+      });
+    });
+  }
+}
+
+// ===== TIMELINE =====
+function renderTimeline(ct) {
+  const info = h("div", { className: "card", style: { background:"var(--sagePale)",border:"none",padding:"16px",marginBottom:"16px" } });
+  info.innerHTML = `<div style="font-size:14px;font-weight:700;color:var(--sageDk)">Day-of Schedule</div>
+    <div style="font-size:12px;color:var(--textMid);margin-top:2px">Share this timeline with your wedding party and vendors</div>`;
+  ct.appendChild(info);
+
+  const wrap = h("div", { style: { position:"relative",paddingLeft:"32px" } });
+  wrap.innerHTML = `<div class="tl-line"></div>`;
+  state.timeline.forEach(t => {
+    const item = h("div", { style: { position:"relative",marginBottom:"12px" } });
+    item.innerHTML = `<div class="tl-dot"></div>
+      <div class="card" style="padding:14px 16px"><div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div><div style="font-size:12px;font-weight:700;color:var(--sage)">${t.time}</div>
+      <div style="font-size:15px;font-weight:600;margin-top:2px">${t.event}</div>
+      <div style="font-size:12px;color:var(--textLt);margin-top:2px">${t.who} · ${t.loc}</div></div>
+      <button class="btn-sm" id="tlrem-${t.id}">✕</button></div></div>`;
+    wrap.appendChild(item);
+  });
+  ct.appendChild(wrap);
+
+  state.timeline.forEach(t => {
+    document.getElementById(`tlrem-${t.id}`).addEventListener("click", () => {
+      state.timeline = state.timeline.filter(x => x.id!==t.id);
+      update({timeline:state.timeline});
+    });
+  });
+
+  ct.appendChild(h("button", { className: "btn", style: { marginTop:"8px" }, onClick: () => { modal="addTimeline"; renderModal(); } }, "+ Add Event"));
+}
+
+// ===== MODALS =====
+function renderModal() {
+  let existing = document.getElementById("modal-container");
+  if (existing) existing.remove();
+  if (!modal) return;
+
+  const bg = h("div", { id: "modal-container", className: "modal-bg", onClick: () => { modal=null; renderModal(); } });
+  const overlay = h("div", { className: "modal-overlay" });
+  const sheet = h("div", { className: "modal-sheet", onClick: e => e.stopPropagation() });
+  const handle = h("div", { className: "modal-handle" });
+  const pad = h("div", { style: { padding: "0 24px" } });
+
+  sheet.append(handle, pad);
+  bg.append(overlay, sheet);
+
+  if (modal === "addGuest") {
+    pad.innerHTML = `<div class="modal-header"><h3 style="font-size:20px;font-weight:700">Add Guest</h3><button class="modal-close" id="mclose">✕</button></div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+      <div><div class="label">Name</div><input class="input" id="mg-name" placeholder="Guest name"></div>
+      <div style="display:flex;gap:10px"><div style="flex:1"><div class="label">RSVP</div><select class="select" id="mg-rsvp"><option value="pending">Pending</option><option value="yes">Confirmed</option><option value="no">Declined</option></select></div>
+      <div style="flex:1"><div class="label">Meal</div><select class="select" id="mg-meal"><option>Standard</option><option>Vegetarian</option><option>Vegan</option><option>Gluten-Free</option><option>Kids Meal</option><option>Other</option></select></div></div>
+      <div style="display:flex;gap:10px"><div style="flex:1"><div class="label">Table</div><select class="select" id="mg-table"><option value="">Unassigned</option>${state.tables.map(t=>`<option value="${t.name}">${t.name}</option>`).join("")}</select></div>
+      <div style="flex:1"><div class="label">Plus One?</div><button class="btn btn-ghost" id="mg-plus" style="width:100%">No</button></div></div>
+      <button class="btn" id="mg-submit">Add Guest</button></div>`;
+    document.body.appendChild(bg);
+    let plusOne = false;
+    document.getElementById("mg-plus").addEventListener("click", () => {
+      plusOne = !plusOne;
+      document.getElementById("mg-plus").textContent = plusOne ? "Yes ✓" : "No";
+      document.getElementById("mg-plus").style.background = plusOne ? "var(--sagePale)" : "";
+      document.getElementById("mg-plus").style.color = plusOne ? "var(--sageDk)" : "";
+    });
+    document.getElementById("mg-submit").addEventListener("click", () => {
+      const name = document.getElementById("mg-name").value.trim();
+      if (!name) return;
+      state.guests.push({ id: Date.now(), name, rsvp: document.getElementById("mg-rsvp").value, meal: document.getElementById("mg-meal").value, plusOne, table: document.getElementById("mg-table").value, notes: "" });
+      update({guests:state.guests});
+      modal = null; renderModal();
+    });
+  }
+
+  else if (modal === "addTask") {
+    pad.innerHTML = `<div class="modal-header"><h3 style="font-size:20px;font-weight:700">Add Task</h3><button class="modal-close" id="mclose">✕</button></div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+      <div><div class="label">Task</div><input class="input" id="mt-text" placeholder="What needs to be done?"></div>
+      <div style="display:flex;gap:10px"><div style="flex:1"><div class="label">Phase</div><select class="select" id="mt-cat">${TASK_CATS.map(c=>`<option>${c.name}</option>`).join("")}</select></div>
+      <div style="flex:1"><div class="label">Priority</div><select class="select" id="mt-pri"><option value="high">🔴 High</option><option value="medium" selected>🟡 Medium</option><option value="low">🟢 Low</option></select></div></div>
+      <button class="btn" id="mt-submit">Add Task</button></div>`;
+    document.body.appendChild(bg);
+    document.getElementById("mt-submit").addEventListener("click", () => {
+      const text = document.getElementById("mt-text").value.trim();
+      if (!text) return;
+      state.tasks.push({ id: Date.now(), text, done: false, category: document.getElementById("mt-cat").value, priority: document.getElementById("mt-pri").value });
+      update({tasks:state.tasks});
+      modal = null; renderModal();
+    });
+  }
+
+  else if (modal === "addBudget") {
+    pad.innerHTML = `<div class="modal-header"><h3 style="font-size:20px;font-weight:700">Add Budget Category</h3><button class="modal-close" id="mclose">✕</button></div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+      <div><div class="label">Category Name</div><input class="input" id="mb-cat" placeholder="e.g. Photo Booth"></div>
+      <div><div class="label">Estimated Cost</div><input class="input" type="number" id="mb-est" placeholder="0"></div>
+      <button class="btn" id="mb-submit">Add Category</button></div>`;
+    document.body.appendChild(bg);
+    document.getElementById("mb-submit").addEventListener("click", () => {
+      const cat = document.getElementById("mb-cat").value.trim();
+      if (!cat) return;
+      state.budget.push({ id: Date.now(), cat, est: Number(document.getElementById("mb-est").value)||0, act: 0, paid: false });
+      update({budget:state.budget});
+      modal = null; renderModal();
+    });
+  }
+
+  else if (modal === "addTimeline") {
+    pad.innerHTML = `<div class="modal-header"><h3 style="font-size:20px;font-weight:700">Add Timeline Event</h3><button class="modal-close" id="mclose">✕</button></div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+      <div><div class="label">Time</div><input class="input" type="time" id="mtl-time"></div>
+      <div><div class="label">Event</div><input class="input" id="mtl-event" placeholder="What's happening?"></div>
+      <div style="display:flex;gap:10px"><div style="flex:1"><div class="label">Who</div><select class="select" id="mtl-who"><option>Everyone</option><option>Couple</option><option>Bridal Party</option><option>Wedding Party</option><option>Family</option><option>Guests</option><option>Vendors</option></select></div>
+      <div style="flex:1"><div class="label">Location</div><input class="input" id="mtl-loc" placeholder="Where?"></div></div>
+      <button class="btn" id="mtl-submit">Add Event</button></div>`;
+    document.body.appendChild(bg);
+    document.getElementById("mtl-submit").addEventListener("click", () => {
+      const event = document.getElementById("mtl-event").value.trim();
+      if (!event) return;
+      const timeVal = document.getElementById("mtl-time").value;
+      const fmt = timeVal ? new Date(`2000-01-01T${timeVal}`).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}) : "TBD";
+      state.timeline.push({ id: Date.now(), time: fmt, event, who: document.getElementById("mtl-who").value, loc: document.getElementById("mtl-loc").value });
+      state.timeline.sort((a,b) => {
+        const toM = s => { const m=s.match(/(\d+):(\d+)\s*(AM|PM)/i); if(!m) return 9999; let h=+m[1]; if(m[3].toUpperCase()==="PM"&&h!==12)h+=12; if(m[3].toUpperCase()==="AM"&&h===12)h=0; return h*60+ +m[2]; };
+        return toM(a.time)-toM(b.time);
+      });
+      update({timeline:state.timeline});
+      modal = null; renderModal();
+    });
+  }
+
+  const mc = document.getElementById("mclose");
+  if (mc) mc.addEventListener("click", () => { modal=null; renderModal(); });
+}
+
+// Initial render (will re-render when Firebase data arrives)
+if (!loaded) {
+  document.getElementById("content").innerHTML = `<div style="text-align:center;padding:60px 20px;color:var(--textLt)">
+    <div style="font-size:32px;margin-bottom:12px">💍</div><div style="font-weight:600">Loading your wedding planner...</div></div>`;
+}
+</script>
+</body>
+</html>
