@@ -310,6 +310,17 @@ function ensureNewFields(){
   if(!S.photoChecklist || typeof S.photoChecklist!=='object' || Object.keys(S.photoChecklist).length===0){
     S.photoChecklist=buildPhotoChecklist();changed=true;
   }
+  if(!Array.isArray(S.glamMakeup)){
+    S.glamMakeup=HAIR_MAKEUP.makeup.map((p,i)=>({id:i+1,...p}));changed=true;
+  }
+  if(!Array.isArray(S.glamHair)){
+    S.glamHair=HAIR_MAKEUP.hair.map((p,i)=>({id:i+1,...p}));changed=true;
+  }
+  if(!Array.isArray(S.photoItems)){
+    S.photoSections=Object.keys(PHOTO_CHECKLIST);
+    S.photoItems=Object.entries(PHOTO_CHECKLIST).flatMap(([sec,its])=>its.map((t,i)=>({id:sec+"_"+i,text:t,section:sec})));
+    changed=true;
+  }
   return changed;
 }
 
@@ -471,15 +482,14 @@ S.tasks.forEach(t=>{const el=document.getElementById("tc-"+t.id);if(el)el.addEve
 document.getElementById("tadd").addEventListener("click",()=>{modal="addTask";rModal();});
 }
 
-// VENDORS (new tab with real data)
+
+// VENDORS (fully editable)
 function rVendors(ct){
 const vens=Array.isArray(S.vendors)&&S.vendors.length?S.vendors:DEF_VENDORS;
 const totalOwed=vens.reduce((s,v)=>s+(v.total||0),0);
 const totalPaid=vens.reduce((s,v)=>s+(v.payments||[]).filter(p=>p.paid).reduce((s2,p)=>s2+p.amount,0),0);
 const totalDue=vens.reduce((s,v)=>s+(v.payments||[]).filter(p=>!p.paid).reduce((s2,p)=>s2+p.amount,0),0);
 const bp=totalOwed?Math.min(100,Math.round(totalPaid/totalOwed*100)):0;
-
-// Upcoming payments
 const upcoming=vens.flatMap(v=>(v.payments||[]).filter(p=>!p.paid&&p.date).map(p=>({...p,vendor:v.vendor,cat:v.cat,vid:v.id}))).sort((a,b)=>new Date(a.date)-new Date(b.date));
 
 let html=`<div class="cd" style="background:linear-gradient(135deg,var(--sagePale),var(--tanLt));border:none">
@@ -490,51 +500,60 @@ let html=`<div class="cd" style="background:linear-gradient(135deg,var(--sagePal
 <div style="height:8px;border-radius:4px;background:rgba(255,255,255,.5);margin-top:16px"><div style="height:100%;border-radius:4px;background:var(--sage);width:${bp}%;transition:width .4s"></div></div>
 <div style="font-size:13px;color:var(--sageDk);margin-top:8px;text-align:center;font-weight:500">$${totalDue.toLocaleString()} remaining</div></div>`;
 
-// Upcoming payments card
 if(upcoming.length){
 html+=`<div class="cd"><div style="font-size:14px;font-weight:700;margin-bottom:12px">📅 Upcoming Payments</div>`;
-upcoming.forEach(p=>{
-const overdue=isPast(p.date);
-html+=`<div class="vendor-row">
-<div style="flex:1"><div style="font-size:13px;font-weight:600">${p.cat}</div>
+upcoming.forEach((p,i)=>{const overdue=isPast(p.date);
+html+=`<div class="vendor-row"><div style="flex:1"><div style="font-size:13px;font-weight:600">${p.cat}</div>
 <div style="font-size:11px;color:var(--textLt)">${p.vendor} · ${p.label}</div></div>
 <div style="text-align:right"><div style="font-size:14px;font-weight:700">$${p.amount.toLocaleString()}</div>
-<div style="font-size:11px;color:${overdue?"var(--red)":"var(--textLt)"};font-weight:${overdue?700:400}">${fmtDate(p.date)}${overdue?" ⚠":"" }</div></div>
-<button class="btn-s" style="margin-left:4px" id="vp-${p.vid}-${p.label.replace(/\s/g,'')}">✓ Paid</button></div>`;});
+<div style="font-size:11px;color:${overdue?"var(--red)":"var(--textLt)"};font-weight:${overdue?700:400}">${fmtDate(p.date)}${overdue?" ⚠":""}</div></div>
+<button class="btn-s" style="margin-left:4px" id="vup-${i}">✓ Paid</button></div>`;});
 html+=`</div>`;}
 
-// Vendor cards
 vens.forEach(v=>{
 const paid=(v.payments||[]).filter(p=>p.paid).reduce((s,p)=>s+p.amount,0);
 const vp=v.total?Math.min(100,Math.round(paid/v.total*100)):0;
 html+=`<div class="cd"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
 <div><div style="font-size:15px;font-weight:700">${v.cat}</div>
 <div style="font-size:13px;color:var(--textMid)">${v.vendor}</div></div>
-<div style="text-align:right"><div style="font-size:16px;font-weight:700">${v.total?'$'+v.total.toLocaleString():'TBD'}</div>
-<div style="font-size:11px;color:var(--textLt)">total</div></div></div>`;
+<div style="display:flex;align-items:center;gap:6px">
+<span id="vt-${v.id}" style="cursor:pointer;font-size:16px;font-weight:700">${v.total?'$'+v.total.toLocaleString():'TBD'}</span>
+<button class="btn-s d" id="vdel-${v.id}">✕</button></div></div>`;
 if(v.total){html+=`<div class="pb" style="margin-bottom:10px"><div class="pf" style="background:var(--sage);width:${vp}%"></div></div>`;}
-(v.payments||[]).forEach(p=>{
-html+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid var(--bgAlt)">
-<span class="pay-chip ${p.paid?"pay-paid":isPast(p.date)?"pay-due":"pay-upcoming"}">${p.paid?"PAID":isPast(p.date)?"OVERDUE":"DUE"}</span>
+(v.payments||[]).forEach((p,pi)=>{
+html+=`<div style="display:flex;align-items:center;gap:6px;padding:6px 0;font-size:13px;border-bottom:1px solid var(--bgAlt)">
+<button class="btn-s" id="vpt-${v.id}-${pi}" style="min-width:48px;font-size:10px;${p.paid?"background:var(--greenBg);color:var(--green);border-color:var(--green)":isPast(p.date)?"background:var(--redBg);color:var(--red);border-color:var(--red)":"background:var(--goldBg);color:var(--tanDk);border-color:var(--tan)"}">${p.paid?"PAID":isPast(p.date)?"LATE":"DUE"}</button>
 <span style="flex:1">${p.label}</span>
-<span style="font-weight:600">$${p.amount.toLocaleString()}</span>
-<span style="font-size:11px;color:var(--textLt)">${fmtDate(p.date)}</span></div>`;});
-html+=`</div>`;});
+<span id="vpa-${v.id}-${pi}" style="font-weight:600;cursor:pointer">$${p.amount.toLocaleString()}</span>
+<span id="vpd-${v.id}-${pi}" style="font-size:11px;color:var(--textLt);cursor:pointer">${fmtDate(p.date)}</span>
+<button class="btn-s d" id="vpr-${v.id}-${pi}" style="padding:2px 6px">✕</button></div>`;});
+html+=`<button class="btn-s" style="margin-top:8px" id="vpay-${v.id}">+ Add Payment</button></div>`;});
 
 html+=`<button class="btn" style="margin-top:8px" id="vadd">+ Add Vendor</button>`;
 ct.innerHTML=html;
 
-// Mark upcoming payments as paid
-upcoming.forEach(p=>{
-const el=document.getElementById("vp-"+p.vid+"-"+p.label.replace(/\s/g,''));
-if(el)el.addEventListener("click",()=>{
-S.vendors=S.vendors.map(v=>v.id===p.vid?{...v,payments:v.payments.map(pay=>pay.label===p.label?{...pay,paid:true}:pay)}:v);
-up({vendors:S.vendors});
-});});
+upcoming.forEach((p,i)=>{const el=document.getElementById("vup-"+i);
+if(el)el.addEventListener("click",()=>{S.vendors=S.vendors.map(v=>v.id===p.vid?{...v,payments:(v.payments||[]).map(pay=>pay.label===p.label&&pay.amount===p.amount?{...pay,paid:true}:pay)}:v);up({vendors:S.vendors});});});
 
+vens.forEach(v=>{
+const tEl=document.getElementById("vt-"+v.id);
+if(tEl)tEl.addEventListener("click",()=>{const val=prompt("Edit total contract for "+v.cat+":",v.total||0);if(val!==null){S.vendors=S.vendors.map(x=>x.id===v.id?{...x,total:Number(val)||0}:x);up({vendors:S.vendors});}});
+const dEl=document.getElementById("vdel-"+v.id);
+if(dEl)dEl.addEventListener("click",()=>{if(confirm("Remove "+v.vendor+"?")){S.vendors=S.vendors.filter(x=>x.id!==v.id);up({vendors:S.vendors});}});
+const apEl=document.getElementById("vpay-"+v.id);
+if(apEl)apEl.addEventListener("click",()=>{modal="addPayment";window._payVid=v.id;rModal();});
+(v.payments||[]).forEach((p,pi)=>{
+const ptEl=document.getElementById("vpt-"+v.id+"-"+pi);
+if(ptEl)ptEl.addEventListener("click",()=>{S.vendors=S.vendors.map(x=>x.id===v.id?{...x,payments:x.payments.map((pay,j)=>j===pi?{...pay,paid:!pay.paid}:pay)}:x);up({vendors:S.vendors});});
+const paEl=document.getElementById("vpa-"+v.id+"-"+pi);
+if(paEl)paEl.addEventListener("click",()=>{const val=prompt("Edit amount for "+p.label+":",p.amount);if(val!==null){S.vendors=S.vendors.map(x=>x.id===v.id?{...x,payments:x.payments.map((pay,j)=>j===pi?{...pay,amount:Number(val)||0}:pay)}:x);up({vendors:S.vendors});}});
+const pdEl=document.getElementById("vpd-"+v.id+"-"+pi);
+if(pdEl)pdEl.addEventListener("click",()=>{const val=prompt("Due date for "+p.label+" (YYYY-MM-DD):",p.date||"");if(val!==null){S.vendors=S.vendors.map(x=>x.id===v.id?{...x,payments:x.payments.map((pay,j)=>j===pi?{...pay,date:val}:pay)}:x);up({vendors:S.vendors});}});
+const prEl=document.getElementById("vpr-"+v.id+"-"+pi);
+if(prEl)prEl.addEventListener("click",()=>{S.vendors=S.vendors.map(x=>x.id===v.id?{...x,payments:x.payments.filter((_,j)=>j!==pi)}:x);up({vendors:S.vendors});});
+});});
 document.getElementById("vadd").addEventListener("click",()=>{modal="addVendor";rModal();});
 }
-
 // BUDGET (keep existing)
 function rBudget(ct){
 const tE=S.budget.reduce((s,b)=>s+b.est,0),tA=S.budget.reduce((s,b)=>s+b.act,0),bp=tE?Math.min(100,Math.round(tA/tE*100)):0;
@@ -655,54 +674,83 @@ S.timeline.forEach(t=>{document.getElementById("tlr-"+t.id).addEventListener("cl
 document.getElementById("tladd").addEventListener("click",()=>{modal="addTimeline";rModal();});
 }
 
-// GLAM (Hair & Makeup)
+
+// GLAM (Hair & Makeup - fully editable, state-driven)
 function rGlam(ct){
 const [glamTab,setGlamTab]=[window._glamTab||"makeup",v=>{window._glamTab=v;render();}];
+// Initialize from defaults if not in state
+if(!Array.isArray(S.glamMakeup)){S.glamMakeup=HAIR_MAKEUP.makeup.map((p,i)=>({id:i+1,...p}));S.glamHair=HAIR_MAKEUP.hair.map((p,i)=>({id:i+1,...p}));}
+const mu=S.glamMakeup||[];
+const ha=S.glamHair||[];
+
 let html=`<div class="cd" style="background:linear-gradient(135deg,var(--pinkLt),var(--sagePale));border:none;text-align:center;padding:24px">
 <div style="font-size:13px;font-weight:600;color:var(--sageDk);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px">💄 Hair & Makeup</div>
 <div style="font-size:13px;color:var(--textMid)">Wedding Day Glam Squad</div>
 <div style="display:flex;justify-content:center;gap:16px;margin-top:14px">
-<div><div style="font-size:24px;font-weight:800;color:var(--sageDk)">${HAIR_MAKEUP.makeup.length}</div><div style="font-size:11px;color:var(--textMid)">Makeup</div></div>
+<div><div style="font-size:24px;font-weight:800;color:var(--sageDk)">${mu.length}</div><div style="font-size:11px;color:var(--textMid)">Makeup</div></div>
 <div style="width:1px;background:var(--border)"></div>
-<div><div style="font-size:24px;font-weight:800;color:var(--sageDk)">${HAIR_MAKEUP.hair.length}</div><div style="font-size:11px;color:var(--textMid)">Hair</div></div></div></div>`;
+<div><div style="font-size:24px;font-weight:800;color:var(--sageDk)">${ha.length}</div><div style="font-size:11px;color:var(--textMid)">Hair</div></div></div></div>`;
 
 html+=`<div style="display:flex;gap:6px;margin-bottom:12px">
 <button class="pill ${glamTab==="makeup"?"a":""}" id="gl-makeup">Makeup</button>
 <button class="pill ${glamTab==="hair"?"a":""}" id="gl-hair">Hair</button></div>`;
 
 if(glamTab==="makeup"){
-html+=`<div class="cd" style="padding:14px 16px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-<div style="font-size:14px;font-weight:700">Makeup by Leah Herron</div></div>`;
-HAIR_MAKEUP.makeup.forEach((p,i)=>{
+html+=`<div class="cd" style="padding:14px 16px"><div style="font-size:14px;font-weight:700;margin-bottom:12px">Makeup by Leah Herron</div>`;
+mu.forEach((p,i)=>{
 const roleColor=p.role==="Bride"?"var(--sage)":p.role.includes("Mother")?"var(--pink)":"var(--textMid)";
-html+=`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i<HAIR_MAKEUP.makeup.length-1?"border-bottom:1px solid var(--bgAlt)":""}">
+html+=`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;${i<mu.length-1?"border-bottom:1px solid var(--bgAlt)":""}">
 <div class="av" style="width:36px;height:36px;font-size:14px;${p.role==="Bride"?"background:var(--sagePale);color:var(--sageDk)":""}">${p.name.charAt(0)}</div>
 <div style="flex:1"><div style="font-size:14px;font-weight:600">${p.name}</div>
 <div style="font-size:11px;color:${roleColor};font-weight:500">${p.role}</div></div>
-<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;background:${p.type==="Airbrush"?"var(--greenBg)":"var(--bgAlt)"};color:${p.type==="Airbrush"?"var(--sage)":"var(--textLt)"}">${p.type}</span></div>`;});
-html+=`</div>`;}
+<button class="btn-s" id="mt-${p.id}" style="min-width:70px;${p.type==="Airbrush"?"background:var(--greenBg);color:var(--sage);border-color:var(--sage)":"background:var(--bgAlt);color:var(--textLt)"}">${p.type||"—"}</button>
+<button class="btn-s d" id="mx-${p.id}" style="padding:2px 6px">✕</button></div>`;});
+html+=`</div><button class="btn" style="margin-top:8px" id="muadd">+ Add Person</button>`;}
 
 if(glamTab==="hair"){
-html+=`<div class="cd" style="padding:14px 16px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-<div style="font-size:14px;font-weight:700">Hair by Union & Main</div></div>`;
-HAIR_MAKEUP.hair.forEach((p,i)=>{
+html+=`<div class="cd" style="padding:14px 16px"><div style="font-size:14px;font-weight:700;margin-bottom:12px">Hair by Union & Main</div>`;
+ha.forEach((p,i)=>{
 const roleColor=p.role==="Bride"?"var(--sage)":p.role.includes("Mother")?"var(--pink)":"var(--textMid)";
-html+=`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i<HAIR_MAKEUP.hair.length-1?"border-bottom:1px solid var(--bgAlt)":""}">
+html+=`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;${i<ha.length-1?"border-bottom:1px solid var(--bgAlt)":""}">
 <div class="av" style="width:36px;height:36px;font-size:14px;${p.role==="Bride"?"background:var(--sagePale);color:var(--sageDk)":""}">${p.name.charAt(0)}</div>
 <div style="flex:1"><div style="font-size:14px;font-weight:600">${p.name}</div>
-<div style="font-size:11px;color:${roleColor};font-weight:500">${p.role}</div></div></div>`;});
-html+=`</div>`;}
+<div style="font-size:11px;color:${roleColor};font-weight:500">${p.role}</div></div>
+<button class="btn-s d" id="hx-${p.id}" style="padding:2px 6px">✕</button></div>`;});
+html+=`</div><button class="btn" style="margin-top:8px" id="haadd">+ Add Person</button>`;}
 
 ct.innerHTML=html;
 ["makeup","hair"].forEach(t=>{document.getElementById("gl-"+t).addEventListener("click",()=>setGlamTab(t));});
+
+if(glamTab==="makeup"){
+mu.forEach(p=>{
+// Toggle airbrush/traditional
+const mtEl=document.getElementById("mt-"+p.id);
+if(mtEl)mtEl.addEventListener("click",()=>{const next=p.type==="Airbrush"?"Traditional":p.type==="Traditional"?"—":"Airbrush";S.glamMakeup=S.glamMakeup.map(x=>x.id===p.id?{...x,type:next}:x);up({glamMakeup:S.glamMakeup});});
+// Remove
+const mxEl=document.getElementById("mx-"+p.id);
+if(mxEl)mxEl.addEventListener("click",()=>{S.glamMakeup=S.glamMakeup.filter(x=>x.id!==p.id);up({glamMakeup:S.glamMakeup});});
+});
+document.getElementById("muadd").addEventListener("click",()=>{modal="addGlamMakeup";rModal();});
+}
+if(glamTab==="hair"){
+ha.forEach(p=>{
+const hxEl=document.getElementById("hx-"+p.id);
+if(hxEl)hxEl.addEventListener("click",()=>{S.glamHair=S.glamHair.filter(x=>x.id!==p.id);up({glamHair:S.glamHair});});
+});
+document.getElementById("haadd").addEventListener("click",()=>{modal="addGlamHair";rModal();});
+}
 }
 window._glamTab="makeup";
 
-// PHOTOS (Photography Checklist)
+// PHOTOS (fully editable checklist)
 function rPhotos(ct){
 const pc2=S.photoChecklist&&typeof S.photoChecklist==='object'?S.photoChecklist:{};
-const allItems=Object.entries(PHOTO_CHECKLIST).flatMap(([,items])=>items);
-const done=allItems.filter(i=>pc2[i]).length;
+// Build section list from defaults + any custom items in state
+const sections=S.photoSections||Object.keys(PHOTO_CHECKLIST);
+const items=S.photoItems||Object.entries(PHOTO_CHECKLIST).flatMap(([sec,its])=>its.map((t,i)=>({id:sec+"_"+i,text:t,section:sec})));
+if(!S.photoItems){S.photoSections=sections;S.photoItems=items;}
+const allItems=items;
+const done=allItems.filter(i=>pc2[i.id]||pc2[i.text]).length;
 const total=allItems.length;
 const pct=total?Math.round(done/total*100):0;
 
@@ -714,28 +762,47 @@ let html=`<div class="cd" style="background:linear-gradient(135deg,var(--sagePal
 <div style="text-align:left"><div style="font-size:22px;font-weight:800;color:var(--sageDk)">${done}<span style="font-size:14px;color:var(--textLt)">/${total}</span></div>
 <div style="font-size:12px;color:var(--textMid)">shots captured</div></div></div></div>`;
 
-Object.entries(PHOTO_CHECKLIST).forEach(([section,items])=>{
-const secDone=items.filter(i=>pc2[i]).length;
-html+=`<div class="cd"><div class="photo-section-title">${section} <span style="float:right;font-size:11px;color:var(--textLt);font-weight:600;text-transform:none;letter-spacing:0">${secDone}/${items.length}</span></div>`;
-items.forEach(item=>{
-const isDone=!!pc2[item];
-const safeId="pc-"+item.replace(/[^a-zA-Z0-9]/g,"_");
-html+=`<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--bgAlt)">
+sections.forEach(section=>{
+const secItems=items.filter(i=>i.section===section);
+const secDone=secItems.filter(i=>pc2[i.id]||pc2[i.text]).length;
+html+=`<div class="cd"><div class="photo-section-title">${section} <span style="float:right;font-size:11px;color:var(--textLt);font-weight:600;text-transform:none;letter-spacing:0">${secDone}/${secItems.length}</span></div>`;
+secItems.forEach(item=>{
+const isDone=!!(pc2[item.id]||pc2[item.text]);
+const safeId="pc-"+item.id.replace(/[^a-zA-Z0-9]/g,"_");
+html+=`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bgAlt)">
 <button class="chk ${isDone?"dn":""}" id="${safeId}">✓</button>
-<div style="font-size:13px;flex:1;${isDone?"text-decoration:line-through;opacity:.5":""}">${item}</div></div>`;});
-html+=`</div>`;});
+<div style="font-size:13px;flex:1;${isDone?"text-decoration:line-through;opacity:.5":""}">${item.text}</div>
+<button class="btn-s d" id="pdr-${safeId}" style="padding:2px 6px">✕</button></div>`;});
+html+=`<button class="btn-s" style="margin-top:8px" id="psa-${section.replace(/[^a-zA-Z0-9]/g,"_")}">+ Add Shot</button></div>`;});
 
+html+=`<button class="btn" style="margin-top:8px" id="psec-add">+ Add Section</button>`;
 ct.innerHTML=html;
-Object.entries(PHOTO_CHECKLIST).forEach(([section,items])=>{
-items.forEach(item=>{
-const safeId="pc-"+item.replace(/[^a-zA-Z0-9]/g,"_");
-const el=document.getElementById(safeId);
-if(el)el.addEventListener("click",()=>{
-S.photoChecklist={...S.photoChecklist,[item]:!S.photoChecklist[item]};
-up({photoChecklist:S.photoChecklist});
-});});});
-}
 
+// Wire up events
+items.forEach(item=>{
+const safeId="pc-"+item.id.replace(/[^a-zA-Z0-9]/g,"_");
+const chkEl=document.getElementById(safeId);
+if(chkEl)chkEl.addEventListener("click",()=>{
+S.photoChecklist={...S.photoChecklist,[item.id]:!(pc2[item.id]||pc2[item.text])};
+up({photoChecklist:S.photoChecklist});});
+const delEl=document.getElementById("pdr-"+safeId);
+if(delEl)delEl.addEventListener("click",()=>{
+S.photoItems=S.photoItems.filter(x=>x.id!==item.id);
+const newPC={...S.photoChecklist};delete newPC[item.id];delete newPC[item.text];
+S.photoChecklist=newPC;
+up({photoItems:S.photoItems,photoChecklist:S.photoChecklist});});
+});
+
+sections.forEach(sec=>{
+const addEl=document.getElementById("psa-"+sec.replace(/[^a-zA-Z0-9]/g,"_"));
+if(addEl)addEl.addEventListener("click",()=>{const t=prompt("Add shot to "+sec+":");if(t&&t.trim()){
+const newItem={id:sec+"_"+Date.now(),text:t.trim(),section:sec};
+S.photoItems=[...S.photoItems,newItem];up({photoItems:S.photoItems});}});
+});
+
+document.getElementById("psec-add").addEventListener("click",()=>{const n=prompt("New section name:");if(n&&n.trim()){
+S.photoSections=[...S.photoSections,n.trim()];up({photoSections:S.photoSections});}});
+}
 // SHOWER
 function rShower(ct){
 const sd=sdl();
@@ -830,6 +897,7 @@ document.getElementById("sbadd").addEventListener("click",()=>{modal="addShowerB
 }
 }
 
+
 // MODALS
 function rModal(){
 let ex=document.getElementById("mc");if(ex)ex.remove();if(!modal)return;
@@ -883,6 +951,35 @@ const dep=Number(document.getElementById("mvd").value)||0;
 const v={id:Date.now(),cat:c,vendor:n,total:Number(document.getElementById("mvt").value)||0,payments:[]};
 if(dep>0)v.payments.push({label:"Deposit",amount:dep,paid:false,date:""});
 S.vendors=[...(S.vendors||[]),v];up({vendors:S.vendors});modal=null;rModal();});}},
+
+addPayment:{title:"Add Payment",html:`<div style="display:flex;flex-direction:column;gap:14px">
+<div><div class="lbl">Payment Label</div><input class="inp" id="mpl" placeholder="e.g. Final Payment"></div>
+<div><div class="lbl">Amount</div><input class="inp" type="number" id="mpa" placeholder="0"></div>
+<div><div class="lbl">Due Date</div><input class="inp" type="date" id="mpd"></div>
+<button class="btn" id="msub">Add Payment</button></div>`,
+init:()=>{document.getElementById("msub").addEventListener("click",()=>{const l=document.getElementById("mpl").value.trim();if(!l)return;
+const vid=window._payVid;
+S.vendors=S.vendors.map(v=>v.id===vid?{...v,payments:[...(v.payments||[]),{label:l,amount:Number(document.getElementById("mpa").value)||0,paid:false,date:document.getElementById("mpd").value||""}]}:v);
+up({vendors:S.vendors});modal=null;rModal();});}},
+
+addGlamMakeup:{title:"Add Makeup Person",html:`<div style="display:flex;flex-direction:column;gap:14px">
+<div><div class="lbl">Name</div><input class="inp" id="mgn" placeholder="Full name"></div>
+<div><div class="lbl">Role</div><select class="sel" id="mgr"><option>Bridesmaid</option><option>Bride</option><option>Maid of Honor</option><option>Mother of Bride</option><option>Mother of Groom</option><option>Flower Girl</option><option>Guest</option></select></div>
+<div><div class="lbl">Type</div><select class="sel" id="mgt"><option>Airbrush</option><option>Traditional</option><option>—</option></select></div>
+<button class="btn" id="msub">Add Person</button></div>`,
+init:()=>{document.getElementById("msub").addEventListener("click",()=>{const n=document.getElementById("mgn").value.trim();if(!n)return;
+if(!S.glamMakeup)S.glamMakeup=[];
+S.glamMakeup.push({id:Date.now(),name:n,role:document.getElementById("mgr").value,type:document.getElementById("mgt").value});
+up({glamMakeup:S.glamMakeup});modal=null;rModal();});}},
+
+addGlamHair:{title:"Add Hair Person",html:`<div style="display:flex;flex-direction:column;gap:14px">
+<div><div class="lbl">Name</div><input class="inp" id="mhn" placeholder="Full name"></div>
+<div><div class="lbl">Role</div><select class="sel" id="mhr"><option>Bridesmaid</option><option>Bride</option><option>Maid of Honor</option><option>Mother of Bride</option><option>Mother of Groom</option><option>Flower Girl</option><option>Guest</option></select></div>
+<button class="btn" id="msub">Add Person</button></div>`,
+init:()=>{document.getElementById("msub").addEventListener("click",()=>{const n=document.getElementById("mhn").value.trim();if(!n)return;
+if(!S.glamHair)S.glamHair=[];
+S.glamHair.push({id:Date.now(),name:n,role:document.getElementById("mhr").value});
+up({glamHair:S.glamHair});modal=null;rModal();});}},
 
 addShowerGuest:{title:"Add Shower Guest",html:`<div style="display:flex;flex-direction:column;gap:14px">
 <div><div class="lbl">Name</div><input class="inp" id="msn" placeholder="Guest name"></div>
