@@ -251,16 +251,7 @@ const PHOTO_CHECKLIST={
 ]
 };
 
-const DEF_BUDGET=[
-{id:1,cat:"Venue & Rentals",est:10000,act:0,paid:false},{id:2,cat:"Catering & Bar",est:7000,act:0,paid:false},
-{id:3,cat:"Photography",est:3000,act:0,paid:false},{id:4,cat:"Videography",est:2000,act:0,paid:false},
-{id:5,cat:"Flowers & Décor",est:2500,act:0,paid:false},{id:6,cat:"Music & Entertainment",est:1500,act:0,paid:false},
-{id:7,cat:"Wedding Attire",est:2500,act:0,paid:false},{id:8,cat:"Cake & Desserts",est:600,act:0,paid:false},
-{id:9,cat:"Stationery & Invites",est:500,act:0,paid:false},{id:10,cat:"Transportation",est:800,act:0,paid:false},
-{id:11,cat:"Favors & Gifts",est:400,act:0,paid:false},{id:12,cat:"Hair & Makeup",est:600,act:0,paid:false},
-{id:13,cat:"Officiant",est:300,act:0,paid:false},{id:14,cat:"Rings",est:1500,act:0,paid:false},
-{id:15,cat:"Honeymoon",est:3000,act:0,paid:false},{id:16,cat:"Miscellaneous",est:1000,act:0,paid:false}
-];
+// Budget is now driven by S.vendors — no separate DEF_BUDGET needed
 
 const DEF_TL=[
 {id:1,time:"8:00 AM",event:"Hair & makeup begins",who:"Bridal Party",loc:"Bridal Suite"},
@@ -285,7 +276,7 @@ function buildGuests(){return PREGUESTS.map((g,i)=>({id:i+1,name:g.n,rsvp:"pendi
 function buildShowerTasks(){return SHOWER_TASKS.map((t,i)=>({id:i+1,text:t.t,priority:t.p,done:false}));}
 function buildShowerGuests(){return PRE_SHOWER_GUESTS.map((g,i)=>({id:i+1,name:g.n,rsvp:"pending"}));}
 
-let S={p1:"",p2:"",wDate:"",tasks:[],budget:[],guests:[],tables:[{id:1,name:"Table 1",seats:10},{id:2,name:"Table 2",seats:10},{id:3,name:"Table 3",seats:8}],timeline:[],
+let S={p1:"",p2:"",wDate:"",tasks:[],guests:[],tables:[{id:1,name:"Table 1",seats:10},{id:2,name:"Table 2",seats:10},{id:3,name:"Table 3",seats:8}],timeline:[],
 vendors:DEF_VENDORS,
 photoChecklist:{},
 showerDate:"",showerVenue:"",showerGuests:[],showerTasks:[],showerBudget:[{id:1,cat:"Venue",est:500,act:0},{id:2,cat:"Food & Drinks",est:400,act:0},{id:3,cat:"Cake",est:100,act:0},{id:4,cat:"Decorations",est:200,act:0},{id:5,cat:"Games & Prizes",est:100,act:0},{id:6,cat:"Favors",est:75,act:0},{id:7,cat:"Flowers",est:100,act:0},{id:8,cat:"Misc",est:100,act:0}]};
@@ -313,6 +304,11 @@ function ensureNewFields(){
   if(!Array.isArray(S.glamMakeup)){
     S.glamMakeup=HAIR_MAKEUP.makeup.map((p,i)=>({id:i+1,...p}));changed=true;
   }
+  // Ensure Bride is always first in makeup list
+  if(Array.isArray(S.glamMakeup)&&S.glamMakeup.length>1){
+    const brideIdx=S.glamMakeup.findIndex(p=>p.role==="Bride");
+    if(brideIdx>0){const b=S.glamMakeup.splice(brideIdx,1)[0];S.glamMakeup.unshift(b);changed=true;}
+  }
   if(!Array.isArray(S.glamHair)){
     S.glamHair=HAIR_MAKEUP.hair.map((p,i)=>({id:i+1,...p}));changed=true;
   }
@@ -333,7 +329,7 @@ DOC.onSnapshot(doc=>{
     if(!loaded){loaded=true;if(changed)save();}
     render();
   }else if(!loaded){
-    S.tasks=buildTasks();S.budget=DEF_BUDGET;S.timeline=DEF_TL;
+    S.tasks=buildTasks();S.timeline=DEF_TL;
     S.guests=buildGuests();S.showerTasks=buildShowerTasks();
     S.showerGuests=buildShowerGuests();S._showerGuestsSeeded=true;
     S.vendors=DEF_VENDORS;S.photoChecklist=buildPhotoChecklist();
@@ -341,7 +337,7 @@ DOC.onSnapshot(doc=>{
   }
 },()=>{
   if(!loaded){
-    S.tasks=buildTasks();S.budget=DEF_BUDGET;S.timeline=DEF_TL;
+    S.tasks=buildTasks();S.timeline=DEF_TL;
     S.guests=buildGuests();S.showerTasks=buildShowerTasks();
     S.showerGuests=buildShowerGuests();S._showerGuestsSeeded=true;
     S.vendors=DEF_VENDORS;S.photoChecklist=buildPhotoChecklist();
@@ -359,7 +355,7 @@ function sdl(){if(!S.showerDate)return null;return Math.max(0,Math.ceil((new Dat
 function fmtDate(d){if(!d)return"—";const dt=new Date(d+"T00:00:00");return dt.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});}
 function isPast(d){if(!d)return false;return new Date(d+"T00:00:00")<new Date();}
 
-const TABS=[["home","🏠","Home"],["tasks","✓","Tasks"],["vendors","💰","Vendors"],["budget","$","Budget"],["guests","👥","Guests"],["seating","◉","Seating"],["timeline","🕐","Day Of"],["glam","💄","Glam"],["photos","📸","Photos"],["shower","🍓","Shower"]];
+const TABS=[["home","🏠","Home"],["tasks","✓","Tasks"],["budget","💰","Budget"],["guests","👥","Guests"],["seating","◉","Seating"],["timeline","🕐","Day Of"],["glam","💄","Glam"],["photos","📸","Photos"],["shower","🍓","Shower"]];
 
 function render(){
   document.getElementById("hn").textContent=(S.p1&&S.p2)?S.p1+" & "+S.p2:"";
@@ -373,7 +369,6 @@ function render(){
   if(!loaded){ct.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--textLt)"><div style="font-size:32px;margin-bottom:12px">💍</div><div style="font-weight:600">Loading...</div></div>`;return;}
   if(tab==="home")rHome(ct);
   else if(tab==="tasks")rTasks(ct);
-  else if(tab==="vendors")rVendors(ct);
   else if(tab==="budget")rBudget(ct);
   else if(tab==="guests")rGuests(ct);
   else if(tab==="seating")rSeating(ct);
@@ -386,19 +381,15 @@ function render(){
 // HOME
 function rHome(ct){
 const d=dl(),td=S.tasks.filter(t=>t.done).length,tp=S.tasks.length?Math.round(td/S.tasks.length*100):0;
-const tE=S.budget.reduce((s,b)=>s+b.est,0),tA=S.budget.reduce((s,b)=>s+b.act,0),bp=tE?Math.min(100,Math.round(tA/tE*100)):0;
 const wg=S.guests.filter(g=>g.type==="wedding"||!g.type);
 const cn=wg.filter(g=>g.rsvp==="yes").reduce((s,g)=>s+(g.plusOne?2:1),0);
 const pn=wg.filter(g=>g.rsvp==="pending").reduce((s,g)=>s+(g.plusOne?2:1),0);
 const sd=sdl(),std=S.showerTasks.filter(t=>t.done).length;
-// Vendor payments summary
 const vens=Array.isArray(S.vendors)&&S.vendors.length?S.vendors:DEF_VENDORS;
 const totalPaid=vens.reduce((s,v)=>s+(v.payments||[]).filter(p=>p.paid).reduce((s2,p)=>s2+p.amount,0),0);
 const totalOwed=vens.reduce((s,v)=>s+(v.total||0),0);
+const bp=totalOwed?Math.min(100,Math.round(totalPaid/totalOwed*100)):0;
 const nextPayment=vens.flatMap(v=>(v.payments||[]).filter(p=>!p.paid&&p.date).map(p=>({...p,vendor:v.vendor,cat:v.cat}))).sort((a,b)=>new Date(a.date)-new Date(b.date))[0];
-// Photo checklist
-const pcDone=Object.values(S.photoChecklist||{}).filter(v=>v).length;
-const pcTotal=Object.values(S.photoChecklist||{}).length;
 
 let html=`<div class="cd" style="background:linear-gradient(135deg,var(--sagePale),var(--tanLt));border:none;text-align:center;padding:28px 24px">
 <div style="font-size:13px;font-weight:600;color:var(--sage);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px">The Pataki Wedding</div>
@@ -416,9 +407,11 @@ html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
 <div style="position:relative">${ring(tp,56,"var(--sage)")}<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--sage)">${tp}%</div></div>
 <div><div style="font-size:12px;color:var(--textLt);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Tasks</div>
 <div style="font-size:20px;font-weight:700">${td}<span style="font-size:14px;color:var(--textLt)">/${S.tasks.length}</span></div></div></div></div>
-<div class="cd" style="cursor:pointer" id="hs-vendors"><div style="font-size:12px;color:var(--textLt);font-weight:600;text-transform:uppercase;letter-spacing:.5px">💰 Vendors</div>
-<div style="font-size:18px;font-weight:700;margin-top:4px">$${totalPaid.toLocaleString()} <span style="font-size:12px;color:var(--textLt)">paid</span></div>
-${nextPayment?`<div style="font-size:11px;color:var(--red);margin-top:4px">Next: ${fmtDate(nextPayment.date)}</div>`:""}</div>
+<div class="cd" style="cursor:pointer" id="hs-budget"><div style="display:flex;align-items:center;gap:12px">
+<div style="position:relative">${ring(bp,56,totalPaid>totalOwed?"var(--red)":"var(--tan)")}<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:${totalPaid>totalOwed?"var(--red)":"var(--tan)"}">${bp}%</div></div>
+<div><div style="font-size:12px;color:var(--textLt);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Budget</div>
+<div style="font-size:18px;font-weight:700">$${totalPaid.toLocaleString()}</div>
+<div style="font-size:11px;color:var(--textLt)">of $${totalOwed.toLocaleString()}</div></div></div></div>
 <div class="cd" style="cursor:pointer" id="hs-guests"><div style="font-size:12px;color:var(--textLt);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Guests</div>
 <div style="font-size:24px;font-weight:700;margin-top:2px">${cn} <span style="font-size:14px;color:var(--textLt)">confirmed</span></div>
 <div style="display:flex;gap:8px;margin-top:6px"><span style="font-size:12px;color:var(--tan)">⏳ ${pn}</span></div></div>
@@ -440,7 +433,7 @@ document.getElementById("ip1").addEventListener("change",e=>up({p1:e.target.valu
 document.getElementById("ip2").addEventListener("change",e=>up({p2:e.target.value}));
 document.getElementById("iwd").addEventListener("change",e=>up({wDate:e.target.value}));
 document.getElementById("hs-tasks").addEventListener("click",()=>{tab="tasks";render();});
-document.getElementById("hs-vendors").addEventListener("click",()=>{tab="vendors";render();});
+document.getElementById("hs-budget").addEventListener("click",()=>{tab="budget";render();});
 document.getElementById("hs-guests").addEventListener("click",()=>{tab="guests";render();});
 document.getElementById("hs-shower").addEventListener("click",()=>{tab="shower";render();});
 un.forEach(t=>{document.getElementById("unc-"+t.id).addEventListener("click",()=>{S.tasks=S.tasks.map(x=>x.id===t.id?{...x,done:!x.done}:x);up({tasks:S.tasks});});});
@@ -483,63 +476,84 @@ document.getElementById("tadd").addEventListener("click",()=>{modal="addTask";rM
 }
 
 
-// VENDORS (fully editable)
-function rVendors(ct){
+// BUDGET (combined vendor payments + budget)
+function rBudget(ct){
 const vens=Array.isArray(S.vendors)&&S.vendors.length?S.vendors:DEF_VENDORS;
 const totalOwed=vens.reduce((s,v)=>s+(v.total||0),0);
 const totalPaid=vens.reduce((s,v)=>s+(v.payments||[]).filter(p=>p.paid).reduce((s2,p)=>s2+p.amount,0),0);
-const totalDue=vens.reduce((s,v)=>s+(v.payments||[]).filter(p=>!p.paid).reduce((s2,p)=>s2+p.amount,0),0);
+const totalDue=totalOwed-totalPaid;
 const bp=totalOwed?Math.min(100,Math.round(totalPaid/totalOwed*100)):0;
+
+// Next upcoming payment across all vendors
 const upcoming=vens.flatMap(v=>(v.payments||[]).filter(p=>!p.paid&&p.date).map(p=>({...p,vendor:v.vendor,cat:v.cat,vid:v.id}))).sort((a,b)=>new Date(a.date)-new Date(b.date));
+const nextPay=upcoming[0];
 
 let html=`<div class="cd" style="background:linear-gradient(135deg,var(--sagePale),var(--tanLt));border:none">
-<div style="display:flex;justify-content:space-between"><div><div style="font-size:12px;color:var(--sageDk);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Total Contracts</div>
+<div style="display:flex;justify-content:space-between"><div><div style="font-size:12px;color:var(--sageDk);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Total Budget</div>
 <div style="font-size:28px;font-weight:800;color:var(--sageDk)">$${totalOwed.toLocaleString()}</div></div>
-<div style="text-align:right"><div style="font-size:12px;color:var(--sageDk);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Paid So Far</div>
+<div style="text-align:right"><div style="font-size:12px;color:var(--sageDk);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Paid</div>
 <div style="font-size:28px;font-weight:800;color:var(--sageDk)">$${totalPaid.toLocaleString()}</div></div></div>
 <div style="height:8px;border-radius:4px;background:rgba(255,255,255,.5);margin-top:16px"><div style="height:100%;border-radius:4px;background:var(--sage);width:${bp}%;transition:width .4s"></div></div>
-<div style="font-size:13px;color:var(--sageDk);margin-top:8px;text-align:center;font-weight:500">$${totalDue.toLocaleString()} remaining</div></div>`;
+<div style="font-size:13px;color:var(--sageDk);margin-top:8px;text-align:center;font-weight:500">$${Math.max(0,totalDue).toLocaleString()} remaining</div></div>`;
 
-if(upcoming.length){
-html+=`<div class="cd"><div style="font-size:14px;font-weight:700;margin-bottom:12px">📅 Upcoming Payments</div>`;
-upcoming.forEach((p,i)=>{const overdue=isPast(p.date);
-html+=`<div class="vendor-row"><div style="flex:1"><div style="font-size:13px;font-weight:600">${p.cat}</div>
-<div style="font-size:11px;color:var(--textLt)">${p.vendor} · ${p.label}</div></div>
-<div style="text-align:right"><div style="font-size:14px;font-weight:700">$${p.amount.toLocaleString()}</div>
-<div style="font-size:11px;color:${overdue?"var(--red)":"var(--textLt)"};font-weight:${overdue?700:400}">${fmtDate(p.date)}${overdue?" ⚠":""}</div></div>
-<button class="btn-s" style="margin-left:4px" id="vup-${i}">✓ Paid</button></div>`;});
-html+=`</div>`;}
+// Next payment due alert
+if(nextPay){
+const overdue=isPast(nextPay.date);
+html+=`<div class="cd" style="background:${overdue?"var(--redBg)":"var(--goldBg)"};border-color:${overdue?"#E8C4BF":"var(--tanLt)"}">
+<div style="display:flex;align-items:center;gap:12px">
+<div style="font-size:20px">${overdue?"⚠️":"📅"}</div>
+<div style="flex:1"><div style="font-size:13px;font-weight:700;color:${overdue?"var(--red)":"var(--tanDk)"}">${overdue?"Payment Overdue":"Next Payment Due"}</div>
+<div style="font-size:12px;color:var(--textMid)">${nextPay.cat} · ${nextPay.vendor}</div></div>
+<div style="text-align:right"><div style="font-size:16px;font-weight:700">$${nextPay.amount.toLocaleString()}</div>
+<div style="font-size:11px;color:var(--textLt)">${fmtDate(nextPay.date)}</div></div></div></div>`;}
 
+// Vendor/budget cards
 vens.forEach(v=>{
-const paid=(v.payments||[]).filter(p=>p.paid).reduce((s,p)=>s+p.amount,0);
+const payments=v.payments||[];
+const paid=payments.filter(p=>p.paid).reduce((s,p)=>s+p.amount,0);
+const remaining=Math.max(0,(v.total||0)-paid);
 const vp=v.total?Math.min(100,Math.round(paid/v.total*100)):0;
-html+=`<div class="cd"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-<div><div style="font-size:15px;font-weight:700">${v.cat}</div>
-<div style="font-size:13px;color:var(--textMid)">${v.vendor}</div></div>
+const nextVP=payments.filter(p=>!p.paid&&p.date).sort((a,b)=>new Date(a.date)-new Date(b.date))[0];
+const allPaid=v.total>0&&paid>=v.total;
+
+html+=`<div class="cd" style="padding:16px"><div style="display:flex;justify-content:space-between;align-items:flex-start">
+<div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:15px;font-weight:700">${v.cat}</span>
+${allPaid?'<span style="font-size:10px;font-weight:700;color:var(--green);background:var(--greenBg);padding:2px 8px;border-radius:10px">PAID IN FULL</span>':""}</div>
+<div style="font-size:13px;color:var(--textMid);margin-top:2px">${v.vendor}</div></div>
 <div style="display:flex;align-items:center;gap:6px">
 <span id="vt-${v.id}" style="cursor:pointer;font-size:16px;font-weight:700">${v.total?'$'+v.total.toLocaleString():'TBD'}</span>
 <button class="btn-s d" id="vdel-${v.id}">✕</button></div></div>`;
-if(v.total){html+=`<div class="pb" style="margin-bottom:10px"><div class="pf" style="background:var(--sage);width:${vp}%"></div></div>`;}
-(v.payments||[]).forEach((p,pi)=>{
-html+=`<div style="display:flex;align-items:center;gap:6px;padding:6px 0;font-size:13px;border-bottom:1px solid var(--bgAlt)">
-<button class="btn-s" id="vpt-${v.id}-${pi}" style="min-width:48px;font-size:10px;${p.paid?"background:var(--greenBg);color:var(--green);border-color:var(--green)":isPast(p.date)?"background:var(--redBg);color:var(--red);border-color:var(--red)":"background:var(--goldBg);color:var(--tanDk);border-color:var(--tan)"}">${p.paid?"PAID":isPast(p.date)?"LATE":"DUE"}</button>
-<span style="flex:1">${p.label}</span>
-<span id="vpa-${v.id}-${pi}" style="font-weight:600;cursor:pointer">$${p.amount.toLocaleString()}</span>
-<span id="vpd-${v.id}-${pi}" style="font-size:11px;color:var(--textLt);cursor:pointer">${fmtDate(p.date)}</span>
-<button class="btn-s d" id="vpr-${v.id}-${pi}" style="padding:2px 6px">✕</button></div>`;});
-html+=`<button class="btn-s" style="margin-top:8px" id="vpay-${v.id}">+ Add Payment</button></div>`;});
 
-html+=`<button class="btn" style="margin-top:8px" id="vadd">+ Add Vendor</button>`;
+if(v.total){html+=`<div class="pb" style="margin:10px 0"><div class="pf" style="background:${allPaid?"var(--sage)":"var(--tan)"};width:${vp}%"></div></div>
+<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--textLt)">
+<span>$${paid.toLocaleString()} paid</span>
+${remaining>0?`<span style="color:var(--tanDk);font-weight:600">$${remaining.toLocaleString()} remaining${nextVP?" · due "+fmtDate(nextVP.date):""}</span>`:""}
+</div>`;}
+
+// Expandable payment breakdown
+if(payments.length){
+html+=`<div id="vexp-${v.id}" style="margin-top:10px;padding-top:8px;border-top:1px solid var(--bgAlt)">`;
+payments.forEach((p,pi)=>{
+html+=`<div style="display:flex;align-items:center;gap:6px;padding:5px 0;font-size:12px">
+<button class="btn-s" id="vpt-${v.id}-${pi}" style="min-width:44px;font-size:9px;padding:2px 6px;${p.paid?"background:var(--greenBg);color:var(--green);border-color:var(--green)":isPast(p.date)?"background:var(--redBg);color:var(--red);border-color:var(--red)":"background:var(--goldBg);color:var(--tanDk);border-color:var(--tan)"}">${p.paid?"PAID":isPast(p.date)?"LATE":"DUE"}</button>
+<span style="flex:1;color:var(--textMid)">${p.label}</span>
+<span id="vpa-${v.id}-${pi}" style="font-weight:600;cursor:pointer;color:var(--text)">$${p.amount.toLocaleString()}</span>
+<span id="vpd-${v.id}-${pi}" style="color:var(--textLt);cursor:pointer">${fmtDate(p.date)}</span>
+<button class="btn-s d" id="vpr-${v.id}-${pi}" style="padding:1px 5px;font-size:10px">✕</button></div>`;});
+html+=`</div>`;}
+
+html+=`<div style="display:flex;gap:6px;margin-top:8px">
+<button class="btn-s" id="vpay-${v.id}">+ Payment</button></div></div>`;});
+
+html+=`<button class="btn" style="margin-top:8px" id="vadd">+ Add Budget Item</button>`;
 ct.innerHTML=html;
 
-upcoming.forEach((p,i)=>{const el=document.getElementById("vup-"+i);
-if(el)el.addEventListener("click",()=>{S.vendors=S.vendors.map(v=>v.id===p.vid?{...v,payments:(v.payments||[]).map(pay=>pay.label===p.label&&pay.amount===p.amount?{...pay,paid:true}:pay)}:v);up({vendors:S.vendors});});});
-
+// Wire events
 vens.forEach(v=>{
 const tEl=document.getElementById("vt-"+v.id);
-if(tEl)tEl.addEventListener("click",()=>{const val=prompt("Edit total contract for "+v.cat+":",v.total||0);if(val!==null){S.vendors=S.vendors.map(x=>x.id===v.id?{...x,total:Number(val)||0}:x);up({vendors:S.vendors});}});
+if(tEl)tEl.addEventListener("click",()=>{const val=prompt("Edit total for "+v.cat+":",v.total||0);if(val!==null){S.vendors=S.vendors.map(x=>x.id===v.id?{...x,total:Number(val)||0}:x);up({vendors:S.vendors});}});
 const dEl=document.getElementById("vdel-"+v.id);
-if(dEl)dEl.addEventListener("click",()=>{if(confirm("Remove "+v.vendor+"?")){S.vendors=S.vendors.filter(x=>x.id!==v.id);up({vendors:S.vendors});}});
+if(dEl)dEl.addEventListener("click",()=>{if(confirm("Remove "+v.cat+"?")){S.vendors=S.vendors.filter(x=>x.id!==v.id);up({vendors:S.vendors});}});
 const apEl=document.getElementById("vpay-"+v.id);
 if(apEl)apEl.addEventListener("click",()=>{modal="addPayment";window._payVid=v.id;rModal();});
 (v.payments||[]).forEach((p,pi)=>{
@@ -554,36 +568,6 @@ if(prEl)prEl.addEventListener("click",()=>{S.vendors=S.vendors.map(x=>x.id===v.i
 });});
 document.getElementById("vadd").addEventListener("click",()=>{modal="addVendor";rModal();});
 }
-// BUDGET (keep existing)
-function rBudget(ct){
-const tE=S.budget.reduce((s,b)=>s+b.est,0),tA=S.budget.reduce((s,b)=>s+b.act,0),bp=tE?Math.min(100,Math.round(tA/tE*100)):0;
-let html=`<div class="cd" style="background:linear-gradient(135deg,var(--sagePale),var(--tanLt));border:none">
-<div style="display:flex;justify-content:space-between"><div><div style="font-size:12px;color:var(--sageDk);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Total Budget</div>
-<div style="font-size:28px;font-weight:800;color:var(--sageDk)">$${tE.toLocaleString()}</div></div>
-<div style="text-align:right"><div style="font-size:12px;color:var(--sageDk);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Spent</div>
-<div style="font-size:28px;font-weight:800;color:${tA>tE?"var(--red)":"var(--sageDk)"}">$${tA.toLocaleString()}</div></div></div>
-<div style="height:8px;border-radius:4px;background:rgba(255,255,255,.5);margin-top:16px"><div style="height:100%;border-radius:4px;background:${tA>tE?"var(--red)":"var(--sage)"};width:${bp}%;transition:width .4s"></div></div>
-<div style="font-size:13px;color:var(--sageDk);margin-top:8px;text-align:center;font-weight:500">$${Math.max(0,tE-tA).toLocaleString()} remaining</div></div>`;
-
-S.budget.forEach(b=>{const p=b.est?Math.min(100,Math.round(b.act/b.est*100)):0;
-html+=`<div class="cd" style="padding:14px 16px"><div style="display:flex;align-items:center;gap:12px">
-<div style="flex:1"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:14px;font-weight:600">${b.cat}</span>
-${b.paid?'<span style="font-size:10px;font-weight:700;color:var(--green);background:var(--greenBg);padding:2px 8px;border-radius:10px">PAID</span>':""}</div>
-<div style="font-size:12px;color:var(--textLt);margin-top:2px">Budget: $${b.est.toLocaleString()}</div></div>
-<span id="bv-${b.id}" style="background:${b.act>0?(b.act>b.est?"var(--redBg)":"var(--greenBg)"):"var(--bgAlt)"};border-radius:10px;padding:8px 14px;cursor:pointer;font-size:15px;font-weight:700;color:${b.act>b.est?"var(--red)":b.act>0?"var(--sageDk)":"var(--textLt)"}">$${b.act.toLocaleString()}</span></div>
-<div class="pb" style="margin-top:10px"><div class="pf" style="background:${b.act>b.est?"var(--red)":"var(--sage)"};width:${p}%"></div></div>
-<div style="display:flex;gap:6px;margin-top:8px"><button class="btn-s" id="bp-${b.id}">${b.paid?"Unmark paid":"Mark paid"}</button>
-<button class="btn-s d" id="br-${b.id}">Remove</button></div></div>`;});
-html+=`<button class="btn" style="margin-top:8px" id="badd">+ Add Category</button>`;
-ct.innerHTML=html;
-S.budget.forEach(b=>{
-document.getElementById("bv-"+b.id).addEventListener("click",()=>{const v=prompt("Enter actual cost for "+b.cat+":",b.act);if(v!==null){S.budget=S.budget.map(x=>x.id===b.id?{...x,act:Number(v)||0}:x);up({budget:S.budget});}});
-document.getElementById("bp-"+b.id).addEventListener("click",()=>{S.budget=S.budget.map(x=>x.id===b.id?{...x,paid:!x.paid}:x);up({budget:S.budget});});
-document.getElementById("br-"+b.id).addEventListener("click",()=>{S.budget=S.budget.filter(x=>x.id!==b.id);up({budget:S.budget});});
-});
-document.getElementById("badd").addEventListener("click",()=>{modal="addBudget";rModal();});
-}
-
 // GUESTS
 function rGuests(ct){
 const wg=S.guests.filter(g=>g.type==="wedding"||!g.type);
@@ -926,11 +910,13 @@ addTask:{title:"Add Task",html:`<div style="display:flex;flex-direction:column;g
 <button class="btn" id="msub">Add Task</button></div>`,
 init:()=>{document.getElementById("msub").addEventListener("click",()=>{const t=document.getElementById("mtt").value.trim();if(!t)return;S.tasks.push({id:Date.now(),text:t,done:false,category:document.getElementById("mtc").value,priority:document.getElementById("mtp").value});up({tasks:S.tasks});modal=null;rModal();});}},
 
-addBudget:{title:"Add Budget Category",html:`<div style="display:flex;flex-direction:column;gap:14px">
-<div><div class="lbl">Category</div><input class="inp" id="mbc" placeholder="e.g. Photo Booth"></div>
-<div><div class="lbl">Estimated Cost</div><input class="inp" type="number" id="mbe" placeholder="0"></div>
-<button class="btn" id="msub">Add Category</button></div>`,
-init:()=>{document.getElementById("msub").addEventListener("click",()=>{const c=document.getElementById("mbc").value.trim();if(!c)return;S.budget.push({id:Date.now(),cat:c,est:Number(document.getElementById("mbe").value)||0,act:0,paid:false});up({budget:S.budget});modal=null;rModal();});}},
+addBudget:{title:"Add Budget Item",html:`<div style="display:flex;flex-direction:column;gap:14px">
+<div><div class="lbl">Category</div><input class="inp" id="mbc" placeholder="e.g. Florist"></div>
+<div><div class="lbl">Vendor Name</div><input class="inp" id="mbn" placeholder="Business name"></div>
+<div><div class="lbl">Total Cost</div><input class="inp" type="number" id="mbe" placeholder="0"></div>
+<button class="btn" id="msub">Add Item</button></div>`,
+init:()=>{document.getElementById("msub").addEventListener("click",()=>{const c=document.getElementById("mbc").value.trim();const n=document.getElementById("mbn").value.trim()||"TBD";if(!c)return;
+S.vendors=[...(S.vendors||[]),{id:Date.now(),cat:c,vendor:n,total:Number(document.getElementById("mbe").value)||0,payments:[]}];up({vendors:S.vendors});modal=null;rModal();});}},
 
 addTimeline:{title:"Add Timeline Event",html:`<div style="display:flex;flex-direction:column;gap:14px">
 <div><div class="lbl">Time</div><input class="inp" type="time" id="mlt"></div>
