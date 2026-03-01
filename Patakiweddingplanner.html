@@ -1,4 +1,53 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Pataki Wedding">
+<title>Pataki Wedding Planner</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#F7F6F2;--bgAlt:#EDEAE2;
+--sage:#6B7F5E;--sageDk:#4A5E3D;--sageLt:#8FA67E;--sagePale:#D6E2CD;
+--tan:#C4AD8F;--tanLt:#E8DECE;--tanDk:#A8915F;--cream:#FFF9F0;--white:#FFFFFF;
+--text:#2F3327;--textMid:#5A5E4A;--textLt:#8A8D7A;--border:#D8D5CA;
+--red:#BF6B5E;--redBg:#FDF0EE;--green:#6B7F5E;--greenBg:#E4EDDD;--goldBg:#FBF6EF;
+--pink:#C97A90;--pinkBg:#FDF0F4;--pinkLt:#EDCDD7
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-tap-highlight-color:transparent}
+::-webkit-scrollbar{display:none}
+input,select,button{font-family:inherit}
+.hdr{background:var(--white);border-bottom:1px solid var(--border);padding:52px 20px 14px;position:sticky;top:0;z-index:50;text-align:center}
+.hdr-sub{font-size:11px;font-weight:700;color:var(--sage);text-transform:uppercase;letter-spacing:3px}
+.hdr-title{font-size:22px;font-weight:800;margin-top:-2px;color:var(--sageDk)}
+.hdr-names{font-size:12px;color:var(--textLt);margin-top:2px}
+.tabs{display:flex;background:var(--white);border-bottom:1px solid var(--border);padding:0 2px;overflow-x:auto;position:sticky;top:88px;z-index:50;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tb{flex:0 0 auto;min-width:52px;padding:10px 6px 8px;border:none;border-bottom:3px solid transparent;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:all .2s}
+.tb.a{border-bottom-color:var(--sage)}
+.tb .i{font-size:14px}
+.tb .l{font-size:9px;font-weight:600;color:var(--textLt)}
+.tb.a .l{color:var(--sage)}
+.ct{padding:16px 16px 120px;max-width:500px;margin:0 auto}
+.cd{background:var(--white);border-radius:16px;padding:18px 20px;border:1px solid var(--border);margin-bottom:12px}
+.inp{padding:12px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--white);color:var(--text);font-size:15px;outline:none;width:100%;transition:border .2s}
+.inp:focus{border-color:var(--sage)}
+.sel{padding:12px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--white);color:var(--text);font-size:15px;outline:none;width:100%;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235A5E4A' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.sel option{background:var(--white);color:var(--text)}
+.btn{padding:11px 22px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;border:none;background:var(--sage);color:var(--white);transition:all .15s;width:100%}
+.btn:active{opacity:.85;transform:scale(.98)}
+.btn-g{background:var(--bgAlt);color:var(--textMid);border:1px solid var(--border)}
+.btn-s{padding:4px 10px;font-size:11px;border-radius:8px;width:auto;background:none;border:1px solid var(--border);color:var(--textLt);cursor:pointer}
+.btn-s.d{color:var(--red)}
+.lbl{font-size:12px;font-weight:600;color:var(--textMid);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.pill{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--white);color:var(--textMid);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s}
+.pill.a{background:var(--sage);color:var(--white);border-color:var(--sage)}
+.pill .c{background:var(--sagePale);border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px}
+.pill.a .c{background:rgba(255,255,255,.3)}
+.chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:transparent;font-size:13px;transition:all .2s}
 .chk.dn{border-color:var(--sage);background:var(--sage);color:var(--white)}
 .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .av{width:40px;height:40px;border-radius:50%;background:var(--sagePale);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--sageDk);font-size:16px;flex-shrink:0}
@@ -12,6 +61,14 @@
 .pf{height:100%;border-radius:2px;transition:width .4s}
 .sb{position:fixed;top:0;left:0;right:0;z-index:200;height:3px;background:var(--sage);animation:pu 1.5s infinite}
 .hd{display:none}
+.vendor-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--bgAlt)}
+.vendor-row:last-child{border-bottom:none}
+.pay-chip{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap}
+.pay-paid{background:var(--greenBg);color:var(--green)}
+.pay-due{background:var(--redBg);color:var(--red)}
+.pay-upcoming{background:var(--goldBg);color:var(--tanDk)}
+.photo-section{margin-bottom:16px}
+.photo-section-title{font-size:13px;font-weight:700;color:var(--sage);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--sagePale)}
 @keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}
 @keyframes pu{0%,100%{opacity:.3}50%{opacity:1}}
 </style>
@@ -28,7 +85,6 @@
 firebase.initializeApp({apiKey:"AIzaSyBjNn9uMWSbyO3i8bFPbxKCSraHvxhdLbQ",authDomain:"pataki-wedding.firebaseapp.com",projectId:"pataki-wedding",storageBucket:"pataki-wedding.firebasestorage.app",messagingSenderId:"690547288662",appId:"1:690547288662:web:729348ea23813df2b5a9f7"});
 const db=firebase.firestore(),DOC=db.collection("weddings").doc("pataki");
 
-// PRELOADED WEDDING GUESTS
 const PREGUESTS=[
 {n:"Mom Hockenberry"},{n:"Dad Hockenberry"},{n:"Kaci Hockenberry"},{n:"Grandma Hockenberry"},{n:"Pop Hockenberry"},
 {n:"Mom Racho"},{n:"Matt Racho"},{n:"Franklin Pataki"},{n:"Austin Pataki"},{n:"Jessica Cusatis"},
@@ -62,75 +118,21 @@ const PREGUESTS=[
 {n:"LJ Sidari",po:true},{n:"Ricky Gil",po:true}
 ];
 
-// PRELOADED BRIDAL SHOWER GUESTS (from your Excel)
 const PRE_SHOWER_GUESTS=[
-  {n:"Mom Hockenberry"},
-  {n:"Kaci Hockenberry"},
-  {n:"Mom Racho"},
-  {n:"Lauren Pataki"},
-  {n:"Jessica Cusatis"},
-  {n:"Grandma Hockenberry"},
-  {n:"Grandmom Plesh"},
-  {n:"Aunt Mary"},
-  {n:"Carly Sweetra"},
-  {n:"Holly Tomko"},
-  {n:"Rosalie Tomko"},
-  {n:"Amelia Tomko"},
-  {n:"Jill Myers"},
-  {n:"Jessica Ulozas"},
-  {n:"Aunt Liz"},
-  {n:"Rebecca Tomko"},
-  {n:"Aunt Jill"},
-  {n:"Morgan Rex"},
-  {n:"Taylor Dworak"},
-  {n:"Emily Farrell"},
-  {n:"Megan Farrell"},
-  {n:"Jade Monka"},
-  {n:"Aunt Corky"},
-  {n:"Aunt Patsy"},
-  {n:"Joanne Lushefski"},
-  {n:"Abigail Lushefski"},
-  {n:"Lori Besecker"},
-  {n:"Kylee Besecker"},
-  {n:"Aunt Rosie"},
-  {n:"Julia Merante"},
-  {n:"Anna Merante"},
-  {n:"Aunt Jeanne"},
-  {n:"Maddison Plesh"},
-  {n:"Aunt Elaine"},
-  {n:"Olivia Racho"},
-  {n:"Sam Banyas"},
-  {n:"Sophia Buckner"},
-  {n:"Colleen Kubishin"},
-  {n:"Brianna Joseph"},
-  {n:"Bonnie Racho"},
-  {n:"Grace Cram"},
-  {n:"Angela Bendick"},
-  {n:"Amelia Bendick"},
-  {n:"Fabianny Gomez"},
-  {n:"Abbie Konnick"},
-  {n:"Jackie Bendick"},
-  {n:"Arianna Lai"},
-  {n:"Carey Hischar"},
-  {n:"Kasey Mowery"},
-  {n:"Danielle Breisch"},
-  {n:"Bethanne Shoemaker"},
-  {n:"Michelle Caffery"},
-  {n:"Trish Sheehe"},
-  {n:"Maggie Dow"},
-  {n:"Janelle Holloman"},
-  {n:"Amy Varano"},
-  {n:"Chelsea Potter"},
-  {n:"Stephanie Murray"},
-  {n:"Diane Hockenberry"},
-  {n:"Alexis Powell"},
-  {n:"Stacie Lewis"},
-  {n:"Nadine Hromisin"},
-  {n:"Johyne Hoyes"},
-  {n:"Debbie Bowling"},
-  {n:"Christa Saitta"},
-  {n:"Sue Jones"},
-  {n:"Mel Kowalski"}
+{n:"Mom Hockenberry"},{n:"Kaci Hockenberry"},{n:"Mom Racho"},{n:"Lauren Pataki"},{n:"Jessica Cusatis"},
+{n:"Grandma Hockenberry"},{n:"Grandmom Plesh"},{n:"Aunt Mary"},{n:"Carly Sweetra"},{n:"Holly Tomko"},
+{n:"Rosalie Tomko"},{n:"Amelia Tomko"},{n:"Jill Myers"},{n:"Jessica Ulozas"},{n:"Aunt Liz"},
+{n:"Rebecca Tomko"},{n:"Aunt Jill"},{n:"Morgan Rex"},{n:"Taylor Dworak"},{n:"Emily Farrell"},
+{n:"Megan Farrell"},{n:"Jade Monka"},{n:"Aunt Corky"},{n:"Aunt Patsy"},{n:"Joanne Lushefski"},
+{n:"Abigail Lushefski"},{n:"Lori Besecker"},{n:"Kylee Besecker"},{n:"Aunt Rosie"},{n:"Julia Merante"},
+{n:"Anna Merante"},{n:"Aunt Jeanne"},{n:"Maddison Plesh"},{n:"Aunt Elaine"},{n:"Olivia Racho"},
+{n:"Sam Banyas"},{n:"Sophia Buckner"},{n:"Colleen Kubishin"},{n:"Brianna Joseph"},{n:"Bonnie Racho"},
+{n:"Grace Cram"},{n:"Angela Bendick"},{n:"Amelia Bendick"},{n:"Fabianny Gomez"},{n:"Abbie Konnick"},
+{n:"Jackie Bendick"},{n:"Arianna Lai"},{n:"Carey Hischar"},{n:"Kasey Mowery"},{n:"Danielle Breisch"},
+{n:"Bethanne Shoemaker"},{n:"Michelle Caffery"},{n:"Trish Sheehe"},{n:"Maggie Dow"},{n:"Janelle Holloman"},
+{n:"Amy Varano"},{n:"Chelsea Potter"},{n:"Stephanie Murray"},{n:"Diane Hockenberry"},{n:"Alexis Powell"},
+{n:"Stacie Lewis"},{n:"Nadine Hromisin"},{n:"Johyne Hoyes"},{n:"Debbie Bowling"},{n:"Christa Saitta"},
+{n:"Sue Jones"},{n:"Mel Kowalski"}
 ];
 
 const TASK_CATS=[
@@ -149,6 +151,105 @@ const SHOWER_TASKS=[
 {t:"Buy decorations",p:"medium",done:false},{t:"Arrange flowers",p:"low",done:false},{t:"Set up photo area",p:"low",done:false},
 {t:"Buy party favors",p:"low",done:false},{t:"Confirm RSVPs",p:"high",done:false},{t:"Finalize day-of timeline",p:"medium",done:false}
 ];
+
+// REAL VENDOR DATA from spreadsheet
+const DEF_VENDORS=[
+{id:1,cat:"Venue",vendor:"Bellagio Fields",total:12720,payments:[
+  {label:"Down Payment",amount:1000,paid:true,date:"2024-09-05"},
+  {label:"Payment 1",amount:5000,paid:true,date:"2025-06-27"},
+  {label:"Final Payment",amount:5720,paid:false,date:"2026-04-17"}
+]},
+{id:2,cat:"Catering",vendor:"Capriotti's Catering (150 ppl)",total:13466,payments:[
+  {label:"Down Payment",amount:500,paid:true,date:"2024-09-05"}
+]},
+{id:3,cat:"DJ Services",vendor:"Mike Walton Entertainment",total:2995,payments:[
+  {label:"Down Payment",amount:300,paid:true,date:"2024-09-20"},
+  {label:"Payment 1",amount:300,paid:true,date:"2024-11-21"},
+  {label:"Final Payment",amount:2395,paid:false,date:"2026-06-13"}
+]},
+{id:4,cat:"Photography",vendor:"Augy Photography",total:2600,payments:[
+  {label:"Down Payment",amount:125,paid:true,date:"2024-09-05"},
+  {label:"Final Payment",amount:2475,paid:false,date:"2026-07-03"}
+]},
+{id:5,cat:"Videography",vendor:"Reflections Media",total:1626.40,payments:[
+  {label:"Down Payment",amount:325.28,paid:true,date:"2026-02-12"},
+  {label:"Payment 1",amount:650.56,paid:false,date:"2026-04-19"},
+  {label:"Final Payment",amount:650.56,paid:false,date:"2026-06-27"}
+]},
+{id:6,cat:"Makeup Artist",vendor:"Leah Herron",total:0,payments:[
+  {label:"Deposit",amount:50,paid:true,date:"2025-01-09"}
+]},
+{id:7,cat:"Hair Stylist",vendor:"Union & Main",total:0,payments:[
+  {label:"Deposit",amount:200,paid:true,date:"2025-03-07"}
+]},
+{id:8,cat:"Bridal Shower Venue",vendor:"Beaumont Inn",total:1000,payments:[
+  {label:"Deposit",amount:250,paid:true,date:"2025-01-17"}
+]}
+];
+
+// HAIR & MAKEUP DATA
+const HAIR_MAKEUP={
+makeup:[
+  {name:"Kara Hockenberry",role:"Bride",type:"Airbrush"},
+  {name:"Ann Marie Hockenberry",role:"Mother of Bride",type:"Airbrush"},
+  {name:"Carol Racho",role:"Mother of Groom",type:"Airbrush"},
+  {name:"Kaci Hockenberry",role:"Maid of Honor",type:"Airbrush"},
+  {name:"Jade Monka",role:"Bridesmaid",type:"Airbrush"},
+  {name:"Emily Farrell",role:"Bridesmaid",type:"Traditional"},
+  {name:"Carly Tomko",role:"Bridesmaid",type:"Traditional"},
+  {name:"Jessica Ulozas",role:"Bridesmaid",type:"—"},
+  {name:"Morgan Rex",role:"Bridesmaid",type:"Airbrush"},
+  {name:"Jessica Cusatis",role:"Bridesmaid",type:"Traditional"}
+],
+hair:[
+  {name:"Kara Hockenberry",role:"Bride"},
+  {name:"Ann Marie Hockenberry",role:"Mother of Bride"},
+  {name:"Carol Racho",role:"Mother of Groom"},
+  {name:"Kaci Hockenberry",role:"Maid of Honor"},
+  {name:"Jade Monka",role:"Bridesmaid"},
+  {name:"Emily Farrell",role:"Bridesmaid"},
+  {name:"Morgan Rex",role:"Bridesmaid"},
+  {name:"Lauren Pataki",role:"Bridesmaid"},
+  {name:"Jessica Cusatis",role:"Bridesmaid"}
+]
+};
+
+// PHOTO CHECKLIST DATA
+const PHOTO_CHECKLIST={
+"Getting Ready":[
+  "Bride's hair & makeup","Bridal party's hair & makeup","Bride's dress hanging",
+  "Bridal party's dresses hanging","Dress zipping w/ Mom & MOH",
+  "Groom & Groomsmen getting ready","Invitations w/ rings, perfume, shoes"
+],
+"Group Shots":[
+  "Bride & Groom","Bride w/ parents","Bride w/ parents & sister",
+  "Groom w/ parents","Groom w/ parents, brother & sister",
+  "Bride & Groom w/ Bride's parents","Bride & Groom w/ Bride's family",
+  "Bride & Groom w/ Groom's parents","Bride & Groom w/ Groom's family",
+  "Bride & Groom w/ Bride's grandparents","Bride & Groom w/ Groom's grandparents",
+  "Bride w/ Bridesmaids","Bride w/ Groomsmen","Groom w/ Bridesmaids",
+  "Groom w/ Groomsmen","Bride & Groom w/ Bridal party",
+  "Bride & Groom w/ Flower girl & Ring bearer","Bride & Groom w/ Murray"
+],
+"Ceremony":[
+  "Location shots before guests arrive","Groom walking down aisle",
+  "Groom standing w/ Groomsmen","Flower girl & Ring bearer walking down aisle",
+  "Bridal party walking down aisle","Murray running down aisle",
+  "Bride walking down aisle w/ Father","Bride & Groom at altar",
+  "Exchanging of the rings","First kiss",
+  "Bride & Groom walking down the aisle","Bride & Groom kiss in middle of aisle"
+],
+"Reception":[
+  "Details before guests arrive","Place settings","Centerpieces",
+  "Table in full","In Memory Of table","Sweetheart table",
+  "Cake/Dessert table","Audiobook table","Guestbook table","Cake",
+  "Bridal party entrances","Murray's entrance","Bride & Groom entrance",
+  "Bride & Groom's first dance","Father & daughter dance",
+  "Mother & son dance","MOH & Best Man speeches",
+  "Bride & Groom's reaction to speeches","Cake cutting",
+  "Candid shots throughout reception"
+]
+};
 
 const DEF_BUDGET=[
 {id:1,cat:"Venue & Rentals",est:10000,act:0,paid:false},{id:2,cat:"Catering & Bar",est:7000,act:0,paid:false},
@@ -185,48 +286,55 @@ function buildShowerTasks(){return SHOWER_TASKS.map((t,i)=>({id:i+1,text:t.t,pri
 function buildShowerGuests(){return PRE_SHOWER_GUESTS.map((g,i)=>({id:i+1,name:g.n,rsvp:"pending"}));}
 
 let S={p1:"",p2:"",wDate:"",tasks:[],budget:[],guests:[],tables:[{id:1,name:"Table 1",seats:10},{id:2,name:"Table 2",seats:10},{id:3,name:"Table 3",seats:8}],timeline:[],
+vendors:DEF_VENDORS,
+photoChecklist:{},
 showerDate:"",showerVenue:"",showerGuests:[],showerTasks:[],showerBudget:[{id:1,cat:"Venue",est:500,act:0},{id:2,cat:"Food & Drinks",est:400,act:0},{id:3,cat:"Cake",est:100,act:0},{id:4,cat:"Decorations",est:200,act:0},{id:5,cat:"Games & Prizes",est:100,act:0},{id:6,cat:"Favors",est:75,act:0},{id:7,cat:"Flowers",est:100,act:0},{id:8,cat:"Misc",est:100,act:0}]};
 let tab="home",tf="all",gf="all",sf="all",sq="",modal=null,loaded=false;
 
 let saveT=null;
 function save(){clearTimeout(saveT);saveT=setTimeout(()=>{document.getElementById("si").classList.remove("hd");DOC.set(S).then(()=>document.getElementById("si").classList.add("hd")).catch(()=>document.getElementById("si").classList.add("hd"));},500);}
 
+function buildPhotoChecklist(){
+  const pc2={};
+  Object.entries(PHOTO_CHECKLIST).forEach(([sec,items])=>{items.forEach(item=>{pc2[item]=false;});});
+  return pc2;
+}
+function ensureNewFields(){
+  let changed=false;
+  if(!S._showerGuestsSeeded && (!Array.isArray(S.showerGuests) || S.showerGuests.length===0)){
+    S.showerGuests=buildShowerGuests();S._showerGuestsSeeded=true;changed=true;
+  }
+  if(!Array.isArray(S.vendors) || S.vendors.length===0){
+    S.vendors=DEF_VENDORS;changed=true;
+  }
+  if(!S.photoChecklist || typeof S.photoChecklist!=='object' || Object.keys(S.photoChecklist).length===0){
+    S.photoChecklist=buildPhotoChecklist();changed=true;
+  }
+  return changed;
+}
+
 DOC.onSnapshot(doc=>{
   if(doc.exists){
-    S={...S,...doc.data()};
-
-    // One-time backfill: if the doc already existed but showerGuests was never added
-    if(!S._showerGuestsSeeded && (!Array.isArray(S.showerGuests) || S.showerGuests.length===0)){
-      S.showerGuests = buildShowerGuests();
-      S._showerGuestsSeeded = true;
-      DOC.set(S); // persist immediately
-    }
-
-    if(!loaded) loaded=true;
+    const d=doc.data();
+    S={...S,...d};
+    const changed=ensureNewFields();
+    if(changed&&loaded)save();
+    if(!loaded){loaded=true;if(changed)save();}
     render();
   }else if(!loaded){
-    S.tasks=buildTasks();
-    S.budget=DEF_BUDGET;
-    S.timeline=DEF_TL;
-    S.guests=buildGuests();
-    S.showerTasks=buildShowerTasks();
-    S.showerGuests=buildShowerGuests();
-    S._showerGuestsSeeded = true; // mark seeded
-    loaded=true;
-    save();
-    render();
+    S.tasks=buildTasks();S.budget=DEF_BUDGET;S.timeline=DEF_TL;
+    S.guests=buildGuests();S.showerTasks=buildShowerTasks();
+    S.showerGuests=buildShowerGuests();S._showerGuestsSeeded=true;
+    S.vendors=DEF_VENDORS;S.photoChecklist=buildPhotoChecklist();
+    loaded=true;save();render();
   }
 },()=>{
   if(!loaded){
-    S.tasks=buildTasks();
-    S.budget=DEF_BUDGET;
-    S.timeline=DEF_TL;
-    S.guests=buildGuests();
-    S.showerTasks=buildShowerTasks();
-    S.showerGuests=buildShowerGuests();
-    S._showerGuestsSeeded = true; // mark seeded
-    loaded=true;
-    render();
+    S.tasks=buildTasks();S.budget=DEF_BUDGET;S.timeline=DEF_TL;
+    S.guests=buildGuests();S.showerTasks=buildShowerTasks();
+    S.showerGuests=buildShowerGuests();S._showerGuestsSeeded=true;
+    S.vendors=DEF_VENDORS;S.photoChecklist=buildPhotoChecklist();
+    loaded=true;render();
   }
 });
 
@@ -237,9 +345,10 @@ function pc(p){return p==="high"?"var(--red)":p==="medium"?"var(--tan)":"var(--s
 function ring(pct,sz,col){const r=(sz-6)/2,ci=2*Math.PI*r,o=ci-(pct/100)*ci;return`<svg width="${sz}" height="${sz}" style="transform:rotate(-90deg)"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="var(--border)" stroke-width="5"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="${col}" stroke-width="5" stroke-dasharray="${ci}" stroke-dashoffset="${o}" stroke-linecap="round" style="transition:stroke-dashoffset .6s"/></svg>`;}
 function dl(){if(!S.wDate)return null;return Math.max(0,Math.ceil((new Date(S.wDate+"T00:00:00")-new Date())/864e5));}
 function sdl(){if(!S.showerDate)return null;return Math.max(0,Math.ceil((new Date(S.showerDate+"T00:00:00")-new Date())/864e5));}
+function fmtDate(d){if(!d)return"—";const dt=new Date(d+"T00:00:00");return dt.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});}
+function isPast(d){if(!d)return false;return new Date(d+"T00:00:00")<new Date();}
 
-// UPDATED: Shower tab icon is 🍓, removed the extra "Shower List" tab
-const TABS=[["home","🏠","Home"],["tasks","✓","Tasks"],["budget","$","Budget"],["guests","👥","Guests"],["seating","◉","Seating"],["timeline","🕐","Day Of"],["shower","🍓","Shower"]];
+const TABS=[["home","🏠","Home"],["tasks","✓","Tasks"],["vendors","💰","Vendors"],["budget","$","Budget"],["guests","👥","Guests"],["seating","◉","Seating"],["timeline","🕐","Day Of"],["glam","💄","Glam"],["photos","📸","Photos"],["shower","🍓","Shower"]];
 
 function render(){
   document.getElementById("hn").textContent=(S.p1&&S.p2)?S.p1+" & "+S.p2:"";
@@ -251,7 +360,16 @@ function render(){
   });
   const ct=document.getElementById("ct");ct.innerHTML="";
   if(!loaded){ct.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--textLt)"><div style="font-size:32px;margin-bottom:12px">💍</div><div style="font-weight:600">Loading...</div></div>`;return;}
-  if(tab==="home")rHome(ct);else if(tab==="tasks")rTasks(ct);else if(tab==="budget")rBudget(ct);else if(tab==="guests")rGuests(ct);else if(tab==="seating")rSeating(ct);else if(tab==="timeline")rTimeline(ct);else if(tab==="shower")rShower(ct);
+  if(tab==="home")rHome(ct);
+  else if(tab==="tasks")rTasks(ct);
+  else if(tab==="vendors")rVendors(ct);
+  else if(tab==="budget")rBudget(ct);
+  else if(tab==="guests")rGuests(ct);
+  else if(tab==="seating")rSeating(ct);
+  else if(tab==="timeline")rTimeline(ct);
+  else if(tab==="glam")rGlam(ct);
+  else if(tab==="photos")rPhotos(ct);
+  else if(tab==="shower")rShower(ct);
 }
 
 // HOME
@@ -262,6 +380,14 @@ const wg=S.guests.filter(g=>g.type==="wedding"||!g.type);
 const cn=wg.filter(g=>g.rsvp==="yes").reduce((s,g)=>s+(g.plusOne?2:1),0);
 const pn=wg.filter(g=>g.rsvp==="pending").reduce((s,g)=>s+(g.plusOne?2:1),0);
 const sd=sdl(),std=S.showerTasks.filter(t=>t.done).length;
+// Vendor payments summary
+const vens=Array.isArray(S.vendors)&&S.vendors.length?S.vendors:DEF_VENDORS;
+const totalPaid=vens.reduce((s,v)=>s+(v.payments||[]).filter(p=>p.paid).reduce((s2,p)=>s2+p.amount,0),0);
+const totalOwed=vens.reduce((s,v)=>s+(v.total||0),0);
+const nextPayment=vens.flatMap(v=>(v.payments||[]).filter(p=>!p.paid&&p.date).map(p=>({...p,vendor:v.vendor,cat:v.cat}))).sort((a,b)=>new Date(a.date)-new Date(b.date))[0];
+// Photo checklist
+const pcDone=Object.values(S.photoChecklist||{}).filter(v=>v).length;
+const pcTotal=Object.values(S.photoChecklist||{}).length;
 
 let html=`<div class="cd" style="background:linear-gradient(135deg,var(--sagePale),var(--tanLt));border:none;text-align:center;padding:28px 24px">
 <div style="font-size:13px;font-weight:600;color:var(--sage);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px">The Pataki Wedding</div>
@@ -279,11 +405,9 @@ html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
 <div style="position:relative">${ring(tp,56,"var(--sage)")}<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--sage)">${tp}%</div></div>
 <div><div style="font-size:12px;color:var(--textLt);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Tasks</div>
 <div style="font-size:20px;font-weight:700">${td}<span style="font-size:14px;color:var(--textLt)">/${S.tasks.length}</span></div></div></div></div>
-<div class="cd" style="cursor:pointer" id="hs-budget"><div style="display:flex;align-items:center;gap:12px">
-<div style="position:relative">${ring(bp,56,tA>tE?"var(--red)":"var(--tan)")}<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:${tA>tE?"var(--red)":"var(--tan)"}">${bp}%</div></div>
-<div><div style="font-size:12px;color:var(--textLt);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Spent</div>
-<div style="font-size:18px;font-weight:700">$${tA.toLocaleString()}</div>
-<div style="font-size:11px;color:var(--textLt)">of $${tE.toLocaleString()}</div></div></div></div>
+<div class="cd" style="cursor:pointer" id="hs-vendors"><div style="font-size:12px;color:var(--textLt);font-weight:600;text-transform:uppercase;letter-spacing:.5px">💰 Vendors</div>
+<div style="font-size:18px;font-weight:700;margin-top:4px">$${totalPaid.toLocaleString()} <span style="font-size:12px;color:var(--textLt)">paid</span></div>
+${nextPayment?`<div style="font-size:11px;color:var(--red);margin-top:4px">Next: ${fmtDate(nextPayment.date)}</div>`:""}</div>
 <div class="cd" style="cursor:pointer" id="hs-guests"><div style="font-size:12px;color:var(--textLt);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Guests</div>
 <div style="font-size:24px;font-weight:700;margin-top:2px">${cn} <span style="font-size:14px;color:var(--textLt)">confirmed</span></div>
 <div style="display:flex;gap:8px;margin-top:6px"><span style="font-size:12px;color:var(--tan)">⏳ ${pn}</span></div></div>
@@ -291,6 +415,7 @@ html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
 <div style="font-size:20px;font-weight:700;margin-top:2px;color:var(--pink)">${std}<span style="font-size:14px;color:var(--textLt)">/${S.showerTasks.length}</span> tasks</div>
 ${sd!==null?`<div style="font-size:12px;color:var(--textLt);margin-top:2px">${sd} days away</div>`:""}</div></div>`;
 
+// Up Next
 const un=S.tasks.filter(t=>!t.done).sort((a,b)=>a.priority==="high"?-1:b.priority==="high"?1:0).slice(0,5);
 if(un.length){html+=`<div class="cd"><div style="font-size:14px;font-weight:700;margin-bottom:14px">⚡ Up Next</div>`;
 un.forEach(t=>{html+=`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bgAlt)" id="un-${t.id}">
@@ -304,7 +429,7 @@ document.getElementById("ip1").addEventListener("change",e=>up({p1:e.target.valu
 document.getElementById("ip2").addEventListener("change",e=>up({p2:e.target.value}));
 document.getElementById("iwd").addEventListener("change",e=>up({wDate:e.target.value}));
 document.getElementById("hs-tasks").addEventListener("click",()=>{tab="tasks";render();});
-document.getElementById("hs-budget").addEventListener("click",()=>{tab="budget";render();});
+document.getElementById("hs-vendors").addEventListener("click",()=>{tab="vendors";render();});
 document.getElementById("hs-guests").addEventListener("click",()=>{tab="guests";render();});
 document.getElementById("hs-shower").addEventListener("click",()=>{tab="shower";render();});
 un.forEach(t=>{document.getElementById("unc-"+t.id).addEventListener("click",()=>{S.tasks=S.tasks.map(x=>x.id===t.id?{...x,done:!x.done}:x);up({tasks:S.tasks});});});
@@ -346,7 +471,71 @@ S.tasks.forEach(t=>{const el=document.getElementById("tc-"+t.id);if(el)el.addEve
 document.getElementById("tadd").addEventListener("click",()=>{modal="addTask";rModal();});
 }
 
-// BUDGET
+// VENDORS (new tab with real data)
+function rVendors(ct){
+const vens=Array.isArray(S.vendors)&&S.vendors.length?S.vendors:DEF_VENDORS;
+const totalOwed=vens.reduce((s,v)=>s+(v.total||0),0);
+const totalPaid=vens.reduce((s,v)=>s+(v.payments||[]).filter(p=>p.paid).reduce((s2,p)=>s2+p.amount,0),0);
+const totalDue=vens.reduce((s,v)=>s+(v.payments||[]).filter(p=>!p.paid).reduce((s2,p)=>s2+p.amount,0),0);
+const bp=totalOwed?Math.min(100,Math.round(totalPaid/totalOwed*100)):0;
+
+// Upcoming payments
+const upcoming=vens.flatMap(v=>(v.payments||[]).filter(p=>!p.paid&&p.date).map(p=>({...p,vendor:v.vendor,cat:v.cat,vid:v.id}))).sort((a,b)=>new Date(a.date)-new Date(b.date));
+
+let html=`<div class="cd" style="background:linear-gradient(135deg,var(--sagePale),var(--tanLt));border:none">
+<div style="display:flex;justify-content:space-between"><div><div style="font-size:12px;color:var(--sageDk);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Total Contracts</div>
+<div style="font-size:28px;font-weight:800;color:var(--sageDk)">$${totalOwed.toLocaleString()}</div></div>
+<div style="text-align:right"><div style="font-size:12px;color:var(--sageDk);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Paid So Far</div>
+<div style="font-size:28px;font-weight:800;color:var(--sageDk)">$${totalPaid.toLocaleString()}</div></div></div>
+<div style="height:8px;border-radius:4px;background:rgba(255,255,255,.5);margin-top:16px"><div style="height:100%;border-radius:4px;background:var(--sage);width:${bp}%;transition:width .4s"></div></div>
+<div style="font-size:13px;color:var(--sageDk);margin-top:8px;text-align:center;font-weight:500">$${totalDue.toLocaleString()} remaining</div></div>`;
+
+// Upcoming payments card
+if(upcoming.length){
+html+=`<div class="cd"><div style="font-size:14px;font-weight:700;margin-bottom:12px">📅 Upcoming Payments</div>`;
+upcoming.forEach(p=>{
+const overdue=isPast(p.date);
+html+=`<div class="vendor-row">
+<div style="flex:1"><div style="font-size:13px;font-weight:600">${p.cat}</div>
+<div style="font-size:11px;color:var(--textLt)">${p.vendor} · ${p.label}</div></div>
+<div style="text-align:right"><div style="font-size:14px;font-weight:700">$${p.amount.toLocaleString()}</div>
+<div style="font-size:11px;color:${overdue?"var(--red)":"var(--textLt)"};font-weight:${overdue?700:400}">${fmtDate(p.date)}${overdue?" ⚠":"" }</div></div>
+<button class="btn-s" style="margin-left:4px" id="vp-${p.vid}-${p.label.replace(/\s/g,'')}">✓ Paid</button></div>`;});
+html+=`</div>`;}
+
+// Vendor cards
+vens.forEach(v=>{
+const paid=(v.payments||[]).filter(p=>p.paid).reduce((s,p)=>s+p.amount,0);
+const vp=v.total?Math.min(100,Math.round(paid/v.total*100)):0;
+html+=`<div class="cd"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+<div><div style="font-size:15px;font-weight:700">${v.cat}</div>
+<div style="font-size:13px;color:var(--textMid)">${v.vendor}</div></div>
+<div style="text-align:right"><div style="font-size:16px;font-weight:700">${v.total?'$'+v.total.toLocaleString():'TBD'}</div>
+<div style="font-size:11px;color:var(--textLt)">total</div></div></div>`;
+if(v.total){html+=`<div class="pb" style="margin-bottom:10px"><div class="pf" style="background:var(--sage);width:${vp}%"></div></div>`;}
+(v.payments||[]).forEach(p=>{
+html+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid var(--bgAlt)">
+<span class="pay-chip ${p.paid?"pay-paid":isPast(p.date)?"pay-due":"pay-upcoming"}">${p.paid?"PAID":isPast(p.date)?"OVERDUE":"DUE"}</span>
+<span style="flex:1">${p.label}</span>
+<span style="font-weight:600">$${p.amount.toLocaleString()}</span>
+<span style="font-size:11px;color:var(--textLt)">${fmtDate(p.date)}</span></div>`;});
+html+=`</div>`;});
+
+html+=`<button class="btn" style="margin-top:8px" id="vadd">+ Add Vendor</button>`;
+ct.innerHTML=html;
+
+// Mark upcoming payments as paid
+upcoming.forEach(p=>{
+const el=document.getElementById("vp-"+p.vid+"-"+p.label.replace(/\s/g,''));
+if(el)el.addEventListener("click",()=>{
+S.vendors=S.vendors.map(v=>v.id===p.vid?{...v,payments:v.payments.map(pay=>pay.label===p.label?{...pay,paid:true}:pay)}:v);
+up({vendors:S.vendors});
+});});
+
+document.getElementById("vadd").addEventListener("click",()=>{modal="addVendor";rModal();});
+}
+
+// BUDGET (keep existing)
 function rBudget(ct){
 const tE=S.budget.reduce((s,b)=>s+b.est,0),tA=S.budget.reduce((s,b)=>s+b.act,0),bp=tE?Math.min(100,Math.round(tA/tE*100)):0;
 let html=`<div class="cd" style="background:linear-gradient(135deg,var(--sagePale),var(--tanLt));border:none">
@@ -466,6 +655,87 @@ S.timeline.forEach(t=>{document.getElementById("tlr-"+t.id).addEventListener("cl
 document.getElementById("tladd").addEventListener("click",()=>{modal="addTimeline";rModal();});
 }
 
+// GLAM (Hair & Makeup)
+function rGlam(ct){
+const [glamTab,setGlamTab]=[window._glamTab||"makeup",v=>{window._glamTab=v;render();}];
+let html=`<div class="cd" style="background:linear-gradient(135deg,var(--pinkLt),var(--sagePale));border:none;text-align:center;padding:24px">
+<div style="font-size:13px;font-weight:600;color:var(--sageDk);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px">💄 Hair & Makeup</div>
+<div style="font-size:13px;color:var(--textMid)">Wedding Day Glam Squad</div>
+<div style="display:flex;justify-content:center;gap:16px;margin-top:14px">
+<div><div style="font-size:24px;font-weight:800;color:var(--sageDk)">${HAIR_MAKEUP.makeup.length}</div><div style="font-size:11px;color:var(--textMid)">Makeup</div></div>
+<div style="width:1px;background:var(--border)"></div>
+<div><div style="font-size:24px;font-weight:800;color:var(--sageDk)">${HAIR_MAKEUP.hair.length}</div><div style="font-size:11px;color:var(--textMid)">Hair</div></div></div></div>`;
+
+html+=`<div style="display:flex;gap:6px;margin-bottom:12px">
+<button class="pill ${glamTab==="makeup"?"a":""}" id="gl-makeup">Makeup</button>
+<button class="pill ${glamTab==="hair"?"a":""}" id="gl-hair">Hair</button></div>`;
+
+if(glamTab==="makeup"){
+html+=`<div class="cd" style="padding:14px 16px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+<div style="font-size:14px;font-weight:700">Makeup by Leah Herron</div></div>`;
+HAIR_MAKEUP.makeup.forEach((p,i)=>{
+const roleColor=p.role==="Bride"?"var(--sage)":p.role.includes("Mother")?"var(--pink)":"var(--textMid)";
+html+=`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i<HAIR_MAKEUP.makeup.length-1?"border-bottom:1px solid var(--bgAlt)":""}">
+<div class="av" style="width:36px;height:36px;font-size:14px;${p.role==="Bride"?"background:var(--sagePale);color:var(--sageDk)":""}">${p.name.charAt(0)}</div>
+<div style="flex:1"><div style="font-size:14px;font-weight:600">${p.name}</div>
+<div style="font-size:11px;color:${roleColor};font-weight:500">${p.role}</div></div>
+<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;background:${p.type==="Airbrush"?"var(--greenBg)":"var(--bgAlt)"};color:${p.type==="Airbrush"?"var(--sage)":"var(--textLt)"}">${p.type}</span></div>`;});
+html+=`</div>`;}
+
+if(glamTab==="hair"){
+html+=`<div class="cd" style="padding:14px 16px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+<div style="font-size:14px;font-weight:700">Hair by Union & Main</div></div>`;
+HAIR_MAKEUP.hair.forEach((p,i)=>{
+const roleColor=p.role==="Bride"?"var(--sage)":p.role.includes("Mother")?"var(--pink)":"var(--textMid)";
+html+=`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i<HAIR_MAKEUP.hair.length-1?"border-bottom:1px solid var(--bgAlt)":""}">
+<div class="av" style="width:36px;height:36px;font-size:14px;${p.role==="Bride"?"background:var(--sagePale);color:var(--sageDk)":""}">${p.name.charAt(0)}</div>
+<div style="flex:1"><div style="font-size:14px;font-weight:600">${p.name}</div>
+<div style="font-size:11px;color:${roleColor};font-weight:500">${p.role}</div></div></div>`;});
+html+=`</div>`;}
+
+ct.innerHTML=html;
+["makeup","hair"].forEach(t=>{document.getElementById("gl-"+t).addEventListener("click",()=>setGlamTab(t));});
+}
+window._glamTab="makeup";
+
+// PHOTOS (Photography Checklist)
+function rPhotos(ct){
+const pc2=S.photoChecklist&&typeof S.photoChecklist==='object'?S.photoChecklist:{};
+const allItems=Object.entries(PHOTO_CHECKLIST).flatMap(([,items])=>items);
+const done=allItems.filter(i=>pc2[i]).length;
+const total=allItems.length;
+const pct=total?Math.round(done/total*100):0;
+
+let html=`<div class="cd" style="background:linear-gradient(135deg,var(--sagePale),var(--tanLt));border:none;text-align:center;padding:24px">
+<div style="font-size:13px;font-weight:600;color:var(--sageDk);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">📸 Photo Checklist</div>
+<div style="font-size:13px;color:var(--textMid);margin-bottom:12px">for Augy Photography</div>
+<div style="display:flex;justify-content:center;align-items:center;gap:14px">
+<div style="position:relative">${ring(pct,64,"var(--sage)")}<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--sageDk)">${pct}%</div></div>
+<div style="text-align:left"><div style="font-size:22px;font-weight:800;color:var(--sageDk)">${done}<span style="font-size:14px;color:var(--textLt)">/${total}</span></div>
+<div style="font-size:12px;color:var(--textMid)">shots captured</div></div></div></div>`;
+
+Object.entries(PHOTO_CHECKLIST).forEach(([section,items])=>{
+const secDone=items.filter(i=>pc2[i]).length;
+html+=`<div class="cd"><div class="photo-section-title">${section} <span style="float:right;font-size:11px;color:var(--textLt);font-weight:600;text-transform:none;letter-spacing:0">${secDone}/${items.length}</span></div>`;
+items.forEach(item=>{
+const isDone=!!pc2[item];
+const safeId="pc-"+item.replace(/[^a-zA-Z0-9]/g,"_");
+html+=`<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--bgAlt)">
+<button class="chk ${isDone?"dn":""}" id="${safeId}">✓</button>
+<div style="font-size:13px;flex:1;${isDone?"text-decoration:line-through;opacity:.5":""}">${item}</div></div>`;});
+html+=`</div>`;});
+
+ct.innerHTML=html;
+Object.entries(PHOTO_CHECKLIST).forEach(([section,items])=>{
+items.forEach(item=>{
+const safeId="pc-"+item.replace(/[^a-zA-Z0-9]/g,"_");
+const el=document.getElementById(safeId);
+if(el)el.addEventListener("click",()=>{
+S.photoChecklist={...S.photoChecklist,[item]:!S.photoChecklist[item]};
+up({photoChecklist:S.photoChecklist});
+});});});
+}
+
 // SHOWER
 function rShower(ct){
 const sd=sdl();
@@ -484,7 +754,6 @@ let html=`<div class="cd" style="background:linear-gradient(135deg,var(--pinkLt)
 ${sd!==null?`<div style="font-size:36px;font-weight:800;color:var(--pink);line-height:1;margin-top:14px">${sd}</div><div style="font-size:13px;color:var(--textMid)">days away</div>`:""}
 </div>`;
 
-// Sub-tabs
 html+=`<div style="display:flex;gap:6px;margin-bottom:12px;overflow-x:auto">
 <button class="pill ${stab==="overview"?"a":""}" id="st-overview">Overview</button>
 <button class="pill ${stab==="tasks"?"a":""}" id="st-tasks">Tasks</button>
@@ -602,6 +871,18 @@ addTimeline:{title:"Add Timeline Event",html:`<div style="display:flex;flex-dire
 <div style="flex:1"><div class="lbl">Location</div><input class="inp" id="mll" placeholder="Where?"></div></div>
 <button class="btn" id="msub">Add Event</button></div>`,
 init:()=>{document.getElementById("msub").addEventListener("click",()=>{const ev=document.getElementById("mle").value.trim();if(!ev)return;const tv=document.getElementById("mlt").value;const fm=tv?new Date("2000-01-01T"+tv).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}):"TBD";S.timeline.push({id:Date.now(),time:fm,event:ev,who:document.getElementById("mlw").value,loc:document.getElementById("mll").value});S.timeline.sort((a,b)=>{const m=s=>{const x=s.match(/(\d+):(\d+)\s*(AM|PM)/i);if(!x)return 9999;let h=+x[1];if(x[3].toUpperCase()==="PM"&&h!==12)h+=12;if(x[3].toUpperCase()==="AM"&&h===12)h=0;return h*60+ +x[2];};return m(a.time)-m(b.time);});up({timeline:S.timeline});modal=null;rModal();});}},
+
+addVendor:{title:"Add Vendor",html:`<div style="display:flex;flex-direction:column;gap:14px">
+<div><div class="lbl">Category</div><input class="inp" id="mvc" placeholder="e.g. Florist"></div>
+<div><div class="lbl">Vendor Name</div><input class="inp" id="mvn" placeholder="Business name"></div>
+<div><div class="lbl">Total Contract</div><input class="inp" type="number" id="mvt" placeholder="0"></div>
+<div><div class="lbl">Deposit Amount</div><input class="inp" type="number" id="mvd" placeholder="0"></div>
+<button class="btn" id="msub">Add Vendor</button></div>`,
+init:()=>{document.getElementById("msub").addEventListener("click",()=>{const c=document.getElementById("mvc").value.trim();const n=document.getElementById("mvn").value.trim();if(!c||!n)return;
+const dep=Number(document.getElementById("mvd").value)||0;
+const v={id:Date.now(),cat:c,vendor:n,total:Number(document.getElementById("mvt").value)||0,payments:[]};
+if(dep>0)v.payments.push({label:"Deposit",amount:dep,paid:false,date:""});
+S.vendors=[...(S.vendors||[]),v];up({vendors:S.vendors});modal=null;rModal();});}},
 
 addShowerGuest:{title:"Add Shower Guest",html:`<div style="display:flex;flex-direction:column;gap:14px">
 <div><div class="lbl">Name</div><input class="inp" id="msn" placeholder="Guest name"></div>
